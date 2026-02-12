@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider;
 
 use Jenssegers\Agent\Agent;
@@ -11,6 +12,7 @@ use UserAgentParser\Model;
  *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
+ *
  * @see https://github.com/jenssegers/agent
  */
 class JenssegersAgent extends AbstractProvider
@@ -39,32 +41,32 @@ class JenssegersAgent extends AbstractProvider
     protected $detectionCapabilities = [
 
         'browser' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'renderingEngine' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'operatingSystem' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'device' => [
-            'model'    => true,
-            'brand'    => true,
-            'type'     => true,
+            'model' => true,
+            'brand' => true,
+            'type' => true,
             'isMobile' => true,
-            'isTouch'  => false,
+            'isTouch' => false,
         ],
 
         'bot' => [
             'isBot' => true,
-            'name'  => true,
-            'type'  => false,
+            'name' => true,
+            'type' => false,
         ],
     ];
 
@@ -87,7 +89,6 @@ class JenssegersAgent extends AbstractProvider
     private $parser;
 
     /**
-     *
      * @throws PackageNotLoadedException
      */
     public function __construct()
@@ -96,7 +97,6 @@ class JenssegersAgent extends AbstractProvider
     }
 
     /**
-     *
      * @return Agent
      */
     public function getParser()
@@ -105,13 +105,10 @@ class JenssegersAgent extends AbstractProvider
             return $this->parser;
         }
 
-        return new Agent();
+        return new Agent;
     }
 
     /**
-     *
-     * @param array $resultRaw
-     *
      * @return bool
      */
     private function hasResult(array $resultRaw)
@@ -119,31 +116,23 @@ class JenssegersAgent extends AbstractProvider
         if ($resultRaw['isMobile'] === true || $resultRaw['isRobot'] === true) {
             return true;
         }
-
-        if ($this->isRealResult($resultRaw['browserName'], 'browser', 'name') === true || $this->isRealResult($resultRaw['osName']) === true || $this->isRealResult($resultRaw['botName']) === true) {
+        if ($this->isRealResult($resultRaw['browserName'], 'browser', 'name') === true) {
+            return true;
+        }
+        if ($this->isRealResult($resultRaw['osName']) === true) {
             return true;
         }
 
-        return false;
+        return $this->isRealResult($resultRaw['botName']) === true;
     }
 
-    /**
-     *
-     * @param Model\Bot $bot
-     * @param array     $resultRaw
-     */
-    private function hydrateBot(Model\Bot $bot, array $resultRaw)
+    private function hydrateBot(Model\Bot $bot, array $resultRaw): void
     {
         $bot->setIsBot(true);
         $bot->setName($this->getRealResult($resultRaw['botName']));
     }
 
-    /**
-     *
-     * @param Model\Browser $browser
-     * @param array         $resultRaw
-     */
-    private function hydrateBrowser(Model\Browser $browser, array $resultRaw)
+    private function hydrateBrowser(Model\Browser $browser, array $resultRaw): void
     {
         if ($this->isRealResult($resultRaw['browserName'], 'browser', 'name') === true) {
             $browser->setName($resultRaw['browserName']);
@@ -151,12 +140,7 @@ class JenssegersAgent extends AbstractProvider
         }
     }
 
-    /**
-     *
-     * @param Model\OperatingSystem $os
-     * @param array                 $resultRaw
-     */
-    private function hydrateOperatingSystem(Model\OperatingSystem $os, array $resultRaw)
+    private function hydrateOperatingSystem(Model\OperatingSystem $os, array $resultRaw): void
     {
         if ($this->isRealResult($resultRaw['osName']) === true) {
             $os->setName($resultRaw['osName']);
@@ -164,12 +148,7 @@ class JenssegersAgent extends AbstractProvider
         }
     }
 
-    /**
-     *
-     * @param Model\Device $device
-     * @param array        $resultRaw
-     */
-    private function hydrateDevice(Model\Device $device, array $resultRaw)
+    private function hydrateDevice(Model\Device $device, array $resultRaw): void
     {
         if ($resultRaw['isMobile'] === true) {
             $device->setIsMobile(true);
@@ -181,12 +160,8 @@ class JenssegersAgent extends AbstractProvider
 
     /**
      * Get the kind of device.
-     *
-     * @param Agent $parser
-     *
-     * @return string
      */
-    public function getDeviceKind(Agent $parser)
+    public function getDeviceKind(Agent $parser): string
     {
         $kind = 'unavailable';
 
@@ -201,7 +176,7 @@ class JenssegersAgent extends AbstractProvider
         return $kind;
     }
 
-    public function parse($userAgent, array $headers = [])
+    public function parse($userAgent, array $headers = []): \UserAgentParser\Model\UserAgent
     {
         $parser = $this->getParser();
         $parser->setHttpHeaders($headers);
@@ -212,20 +187,20 @@ class JenssegersAgent extends AbstractProvider
          * We cache it here for all checks and hydration
          */
         $browserName = $parser->browser();
-        $osName      = $parser->platform();
+        $osName = $parser->platform();
 
         $resultCache = [
-            'browserName'    => $browserName,
+            'browserName' => $browserName,
             'browserVersion' => $parser->version($browserName),
 
-            'osName'    => $osName,
+            'osName' => $osName,
             'osVersion' => str_replace('_', '.', $parser->version($osName)),
 
             'deviceModel' => $parser->device(),
-            'isMobile'    => $parser->isMobile(),
-            'isTablet'    => $parser->isTablet(),
-            'isDesktop'   => $parser->isDesktop(),
-            'type'        => $this->getDeviceKind($parser),
+            'isMobile' => $parser->isMobile(),
+            'isTablet' => $parser->isTablet(),
+            'isDesktop' => $parser->isDesktop(),
+            'type' => $this->getDeviceKind($parser),
 
             'isRobot' => $parser->isRobot(),
             'botName' => $parser->robot(),
@@ -235,7 +210,7 @@ class JenssegersAgent extends AbstractProvider
          * No result found?
          */
         if ($this->hasResult($resultCache) !== true) {
-            throw new NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         /*
@@ -247,7 +222,7 @@ class JenssegersAgent extends AbstractProvider
         /*
          * Bot detection
          */
-        if ($resultCache['isRobot'] === true) {
+        if ($resultCache['isRobot']) {
             $this->hydrateBot($result->getBot(), $resultCache);
 
             return $result;

@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider\Http;
 
 use GuzzleHttp\Psr7\Response;
@@ -8,7 +9,6 @@ use UserAgentParserTest\Unit\Provider\AbstractProviderTestCase;
 use UserAgentParserTest\Unit\Provider\RequiredProviderTestInterface;
 
 /**
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -16,79 +16,79 @@ use UserAgentParserTest\Unit\Provider\RequiredProviderTestInterface;
  */
 class FiftyOneDegreesComTest extends AbstractProviderTestCase implements RequiredProviderTestInterface
 {
-    public function testGetName()
+    public function test_get_name(): void
     {
         $provider = new FiftyOneDegreesCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals('FiftyOneDegreesCom', $provider->getName());
     }
 
-    public function testGetHomepage()
+    public function test_get_homepage(): void
     {
         $provider = new FiftyOneDegreesCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals('https://51degrees.com', $provider->getHomepage());
     }
 
-    public function testGetPackageName()
+    public function test_get_package_name(): void
     {
         $provider = new FiftyOneDegreesCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getPackageName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
         $provider = new FiftyOneDegreesCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getVersion());
     }
 
-    public function testUpdateDate()
+    public function test_update_date(): void
     {
         $provider = new FiftyOneDegreesCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getUpdateDate());
     }
 
-    public function testDetectionCapabilities()
+    public function test_detection_capabilities(): void
     {
         $provider = new FiftyOneDegreesCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals([
 
             'browser' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'renderingEngine' => [
-                'name'    => true,
+                'name' => true,
                 'version' => false,
             ],
 
             'operatingSystem' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'device' => [
-                'model'    => true,
-                'brand'    => true,
-                'type'     => true,
+                'model' => true,
+                'brand' => true,
+                'type' => true,
                 'isMobile' => true,
-                'isTouch'  => false,
+                'isTouch' => false,
             ],
 
             'bot' => [
                 'isBot' => true,
-                'name'  => false,
-                'type'  => false,
+                'name' => false,
+                'type' => false,
             ],
         ], $provider->getDetectionCapabilities());
     }
 
-    public function testIsRealResult()
+    public function test_is_real_result(): void
     {
         $provider = new FiftyOneDegreesCom($this->getClient(), 'apiKey123');
 
@@ -102,11 +102,11 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
 
     /**
      * Empty user agent
-     *
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
      */
-    public function testParseNoResultFoundExceptionEmptyUserAgent()
+    public function test_parse_no_result_found_exception_empty_user_agent(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $responseQueue = [
             new Response(200),
         ];
@@ -116,12 +116,11 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
         $provider->parse('');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundException()
+    public function test_parse_no_result_found_exception(): void
     {
-        $rawResult              = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $rawResult = new stdClass;
         $rawResult->MatchMethod = 'None';
 
         $responseQueue = [
@@ -132,16 +131,16 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
 
         $provider = new FiftyOneDegreesCom($this->getClient($responseQueue), 'apiKey123');
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * No JSON returned
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestExceptionContentType()
+    public function test_parse_request_exception_content_type(): void
     {
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
         $responseQueue = [
             new Response(200, [
                 'Content-Type' => 'text/html',
@@ -155,12 +154,12 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
 
     /**
      * user_key_invalid
-     *
-     * @expectedException \UserAgentParser\Exception\InvalidCredentialsException
      */
-    public function testParseInvalidCredentialsExceptionInvalidKey()
+    public function test_parse_invalid_credentials_exception_invalid_key(): void
     {
-        $rawResult              = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\InvalidCredentialsException::class);
+
+        $rawResult = new stdClass;
         $rawResult->MatchMethod = 'None';
 
         $responseQueue = [
@@ -176,12 +175,12 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
 
     /**
      * unknown
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestExceptionUnknown()
+    public function test_parse_request_exception_unknown(): void
     {
-        $rawResult              = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
+        $rawResult = new stdClass;
         $rawResult->MatchMethod = 'None';
 
         $responseQueue = [
@@ -195,12 +194,11 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
         $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\RequestException
-     */
-    public function testParseRequestExceptionMissingData()
+    public function test_parse_request_exception_missing_data(): void
     {
-        $rawResult              = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
+        $rawResult = new stdClass;
         $rawResult->MatchMethod = 'Direct';
 
         $responseQueue = [
@@ -211,22 +209,22 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
 
         $provider = new FiftyOneDegreesCom($this->getClient($responseQueue), 'apiKey123');
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * Provider name and version in result?
      */
-    public function testProviderNameAndVersionIsInResult()
+    public function test_provider_name_and_version_is_in_result(): void
     {
-        $parseResult            = new stdClass();
+        $parseResult = new stdClass;
         $parseResult->IsCrawler = [
             'True',
         ];
 
-        $rawResult              = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->MatchMethod = 'Direct';
-        $rawResult->Values      = $parseResult;
+        $rawResult->Values = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -245,16 +243,16 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
     /**
      * Bot
      */
-    public function testParseBot()
+    public function test_parse_bot(): void
     {
-        $parseResult            = new stdClass();
+        $parseResult = new stdClass;
         $parseResult->IsCrawler = [
             'True',
         ];
 
-        $rawResult              = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->MatchMethod = 'Direct';
-        $rawResult->Values      = $parseResult;
+        $rawResult->Values = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -269,8 +267,8 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ];
 
@@ -280,9 +278,9 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
     /**
      * Browser only
      */
-    public function testParseBrowser()
+    public function test_parse_browser(): void
     {
-        $parseResult              = new stdClass();
+        $parseResult = new stdClass;
         $parseResult->BrowserName = [
             'Firefox',
         ];
@@ -290,9 +288,9 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
             '3.2.1',
         ];
 
-        $rawResult              = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->MatchMethod = 'Direct';
-        $rawResult->Values      = $parseResult;
+        $rawResult->Values = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -306,7 +304,7 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Firefox',
+                'name' => 'Firefox',
                 'version' => [
                     'major' => 3,
                     'minor' => 2,
@@ -325,16 +323,16 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
     /**
      * Engine only
      */
-    public function testParseEngine()
+    public function test_parse_engine(): void
     {
-        $parseResult               = new stdClass();
+        $parseResult = new stdClass;
         $parseResult->LayoutEngine = [
             'Webkit',
         ];
 
-        $rawResult              = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->MatchMethod = 'Direct';
-        $rawResult->Values      = $parseResult;
+        $rawResult->Values = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -348,7 +346,7 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
 
         $expectedResult = [
             'renderingEngine' => [
-                'name'    => 'Webkit',
+                'name' => 'Webkit',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -367,9 +365,9 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
     /**
      * OS only
      */
-    public function testParseOperatingSystem()
+    public function test_parse_operating_system(): void
     {
-        $parseResult               = new stdClass();
+        $parseResult = new stdClass;
         $parseResult->PlatformName = [
             'BlackBerryOS',
         ];
@@ -377,9 +375,9 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
             '6.0.0',
         ];
 
-        $rawResult              = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->MatchMethod = 'Direct';
-        $rawResult->Values      = $parseResult;
+        $rawResult->Values = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -393,7 +391,7 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
 
         $expectedResult = [
             'operatingSystem' => [
-                'name'    => 'BlackBerryOS',
+                'name' => 'BlackBerryOS',
                 'version' => [
                     'major' => 6,
                     'minor' => 0,
@@ -412,9 +410,9 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
     /**
      * Device only
      */
-    public function testParseDevice()
+    public function test_parse_device(): void
     {
-        $parseResult                 = new stdClass();
+        $parseResult = new stdClass;
         $parseResult->HardwareVendor = [
             'Dell',
         ];
@@ -428,9 +426,9 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
             'True',
         ];
 
-        $rawResult              = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->MatchMethod = 'Direct';
-        $rawResult->Values      = $parseResult;
+        $rawResult->Values = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -446,10 +444,10 @@ class FiftyOneDegreesComTest extends AbstractProviderTestCase implements Require
             'device' => [
                 'model' => 'Galaxy Note',
                 'brand' => 'Dell',
-                'type'  => 'mobile',
+                'type' => 'mobile',
 
                 'isMobile' => true,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 

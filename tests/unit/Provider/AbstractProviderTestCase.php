@@ -1,25 +1,25 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use UserAgentParser\Model\UserAgent;
 use UserAgentParser\Provider\AbstractProvider;
 
 /**
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  */
-abstract class AbstractProviderTestCase extends PHPUnit_Framework_TestCase
+abstract class AbstractProviderTestCase extends TestCase
 {
     protected function assertProviderResult($result, array $expectedResult)
     {
-        $this->assertInstanceOf('UserAgentParser\Model\UserAgent', $result);
+        $this->assertInstanceOf(\UserAgentParser\Model\UserAgent::class, $result);
 
-        $model          = new UserAgent();
+        $model = new UserAgent;
         $expectedResult = array_merge($model->toArray(), $expectedResult);
 
         $this->assertEquals($result->toArray(), $expectedResult);
@@ -28,14 +28,12 @@ abstract class AbstractProviderTestCase extends PHPUnit_Framework_TestCase
     protected function assertIsRealResult(AbstractProvider $provider, $expected, $value, $group = null, $part = null)
     {
         $reflection = new \ReflectionClass($provider);
-        $method     = $reflection->getMethod('isRealResult');
-        $method->setAccessible(true);
+        $method = $reflection->getMethod('isRealResult');
 
         $this->assertSame($expected, $method->invoke($provider, $value, $group, $part), $value);
     }
 
     /**
-     *
      * @return Client
      */
     protected function getClient(array $responseQueue = [])
@@ -44,10 +42,8 @@ abstract class AbstractProviderTestCase extends PHPUnit_Framework_TestCase
 
         $handler = HandlerStack::create($mock);
 
-        $client = new Client([
+        return new Client([
             'handler' => $handler,
         ]);
-
-        return $client;
     }
 }

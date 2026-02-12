@@ -1,11 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Integration\Provider;
 
 use UserAgentParser\Provider\BrowscapPhp;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -13,24 +12,23 @@ use UserAgentParser\Provider\BrowscapPhp;
  */
 class BrowscapPhpTest extends AbstractBrowscapTestCase
 {
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFoundWithWarmCache()
+    public function test_no_result_found_with_warm_cache(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $provider = new BrowscapPhp($this->getParserWithWarmCache(''));
 
-        $result = $provider->parse('...');
+        $provider->parse('...');
     }
 
-    public function testRealResultBot()
+    public function test_real_result_bot(): void
     {
         $provider = new BrowscapPhp($this->getParserWithWarmCache(''));
 
         $result = $provider->parse('Mozilla/2.0 (compatible; Ask Jeeves)');
         $this->assertEquals([
             'browser' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -42,7 +40,7 @@ class BrowscapPhpTest extends AbstractBrowscapTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -54,7 +52,7 @@ class BrowscapPhpTest extends AbstractBrowscapTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -68,27 +66,27 @@ class BrowscapPhpTest extends AbstractBrowscapTestCase
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => true,
-                'name'  => 'AskJeeves',
-                'type'  => null,
+                'name' => 'AskJeeves',
+                'type' => null,
             ],
         ], $result->toArray());
     }
 
-    public function testRealResultDevice()
+    public function test_real_result_device(): void
     {
         $provider = new BrowscapPhp($this->getParserWithWarmCache(''));
 
         $result = $provider->parse('Mozilla/5.0 (SMART-TV; X11; Linux armv7l) AppleWebkit/537.42 (KHTML, like Gecko) Chromium/48.0.1349.2 Chrome/25.0.1349.2 Safari/537.42');
         $this->assertEquals([
             'browser' => [
-                'name'    => 'Chromium',
+                'name' => 'Chromium',
                 'version' => [
                     'major' => 48,
                     'minor' => null,
@@ -100,7 +98,7 @@ class BrowscapPhpTest extends AbstractBrowscapTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -112,7 +110,7 @@ class BrowscapPhpTest extends AbstractBrowscapTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => 'Linux',
+                'name' => 'Linux',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -126,15 +124,15 @@ class BrowscapPhpTest extends AbstractBrowscapTestCase
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => 'TV Device',
+                'type' => 'TV Device',
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => null,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ], $result->toArray());
     }

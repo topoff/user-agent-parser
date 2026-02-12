@@ -1,11 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Integration\Provider;
 
 use UserAgentParser\Provider\MatomoDeviceDetector;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -13,10 +12,10 @@ use UserAgentParser\Provider\MatomoDeviceDetector;
  */
 class MatomoDeviceDetectorTest extends AbstractProviderTestCase
 {
-    public function testMethods()
+    public function test_methods(): void
     {
-        $provider = new MatomoDeviceDetector();
-        $parser   = $provider->getParser();
+        $provider = new MatomoDeviceDetector;
+        $parser = $provider->getParser();
 
         /*
          * test method exists
@@ -39,24 +38,23 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase
         $this->assertTrue($class->hasMethod('isTouchEnabled'), 'method isTouchEnabled() does not exist anymore');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFound()
+    public function test_no_result_found(): void
     {
-        $provider = new MatomoDeviceDetector();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
 
-        $result = $provider->parse('...');
+        $provider = new MatomoDeviceDetector;
+
+        $provider->parse('...');
     }
 
-    public function testRealResultBot()
+    public function test_real_result_bot(): void
     {
-        $provider = new MatomoDeviceDetector();
+        $provider = new MatomoDeviceDetector;
 
         $result = $provider->parse('Googlebot/2.1 (+http://www.googlebot.com/bot.html)');
         $this->assertEquals([
             'browser' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -68,7 +66,7 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -80,7 +78,7 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -94,15 +92,15 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Googlebot',
-                'type'  => 'Search bot',
+                'name' => 'Googlebot',
+                'type' => 'Search bot',
             ],
         ], $result->toArray());
 
@@ -111,26 +109,26 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase
          */
         $rawResult = $result->getProviderResultRaw();
         $this->assertEquals([
-            'client'          => null,
+            'client' => null,
             'operatingSystem' => null,
 
             'device' => [
-                'brand'     => null,
+                'brand' => null,
                 'brandName' => null,
 
                 'model' => null,
 
-                'device'     => null,
+                'device' => null,
                 'deviceName' => null,
             ],
 
             'bot' => [
-                'name'     => 'Googlebot',
+                'name' => 'Googlebot',
                 'category' => 'Search bot',
-                'url'      => 'http://www.google.com/bot.html',
+                'url' => 'http://www.google.com/bot.html',
                 'producer' => [
                     'name' => 'Google Inc.',
-                    'url'  => 'http://www.google.com',
+                    'url' => 'http://www.google.com',
                 ],
             ],
 
@@ -138,41 +136,41 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase
                 'isBot' => true,
 
                 // client
-                'isBrowser'     => false,
-                'isFeedReader'  => false,
-                'isMobileApp'   => false,
-                'isPIM'         => false,
-                'isLibrary'     => false,
+                'isBrowser' => false,
+                'isFeedReader' => false,
+                'isMobileApp' => false,
+                'isPIM' => false,
+                'isLibrary' => false,
                 'isMediaPlayer' => false,
 
                 // deviceType
-                'isCamera'              => false,
-                'isCarBrowser'          => false,
-                'isConsole'             => false,
-                'isFeaturePhone'        => false,
-                'isPhablet'             => false,
+                'isCamera' => false,
+                'isCarBrowser' => false,
+                'isConsole' => false,
+                'isFeaturePhone' => false,
+                'isPhablet' => false,
                 'isPortableMediaPlayer' => false,
-                'isSmartDisplay'        => false,
-                'isSmartphone'          => false,
-                'isTablet'              => false,
-                'isTV'                  => false,
+                'isSmartDisplay' => false,
+                'isSmartphone' => false,
+                'isTablet' => false,
+                'isTV' => false,
 
                 // other special
-                'isDesktop'      => false,
-                'isMobile'       => false,
+                'isDesktop' => false,
+                'isMobile' => false,
                 'isTouchEnabled' => false,
             ],
         ], $rawResult);
     }
 
-    public function testRealResultDevice()
+    public function test_real_result_device(): void
     {
-        $provider = new MatomoDeviceDetector();
+        $provider = new MatomoDeviceDetector;
 
         $result = $provider->parse('Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3');
         $this->assertEquals([
             'browser' => [
-                'name'    => 'Mobile Safari',
+                'name' => 'Mobile Safari',
                 'version' => [
                     'major' => 5,
                     'minor' => 1,
@@ -184,7 +182,7 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => 'WebKit',
+                'name' => 'WebKit',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -196,7 +194,7 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => 'iOS',
+                'name' => 'iOS',
                 'version' => [
                     'major' => 5,
                     'minor' => null,
@@ -210,15 +208,15 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase
             'device' => [
                 'model' => 'iPhone',
                 'brand' => 'Apple',
-                'type'  => 'smartphone',
+                'type' => 'smartphone',
 
                 'isMobile' => true,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => null,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ], $result->toArray());
     }

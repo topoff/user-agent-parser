@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider\Http;
 
 use GuzzleHttp\Client;
@@ -12,6 +13,7 @@ use UserAgentParser\Model;
  *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
+ *
  * @see https://developers.whatismybrowser.com/reference
  */
 class WhatIsMyBrowserCom extends AbstractHttpProvider
@@ -33,17 +35,17 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
     protected $detectionCapabilities = [
 
         'browser' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'renderingEngine' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'operatingSystem' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
@@ -51,15 +53,15 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
             'model' => true,
             'brand' => true,
 
-            'type'     => true,
+            'type' => true,
             'isMobile' => false,
-            'isTouch'  => false,
+            'isTouch' => false,
         ],
 
         'bot' => [
             'isBot' => true,
-            'name'  => true,
-            'type'  => true,
+            'name' => true,
+            'type' => true,
         ],
     ];
 
@@ -94,40 +96,32 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
         ],
     ];
 
-    private static $uri = 'http://api.whatismybrowser.com/api/v1/user_agent_parse';
+    private static string $uri = 'http://api.whatismybrowser.com/api/v1/user_agent_parse';
 
-    private $apiKey;
-
-    public function __construct(Client $client, $apiKey)
+    public function __construct(Client $client, private $apiKey)
     {
         parent::__construct($client);
-
-        $this->apiKey = $apiKey;
     }
 
-    public function getVersion()
-    {
-        return;
-    }
+    #[\Override]
+    public function getVersion() {}
 
     /**
-     *
-     * @param  string                     $userAgent
-     * @param  array                      $headers
      * @return stdClass
+     *
      * @throws Exception\RequestException
      */
-    protected function getResult($userAgent, array $headers)
+    protected function getResult(?string $userAgent, array $headers)
     {
         /*
          * an empty UserAgent makes no sense
          */
         if ($userAgent == '') {
-            throw new Exception\NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new Exception\NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         $params = [
-            'user_key'   => $this->apiKey,
+            'user_key' => $this->apiKey,
             'user_agent' => $userAgent,
         ];
 
@@ -142,7 +136,7 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
          */
         $contentType = $response->getHeader('Content-Type');
         if (! isset($contentType[0]) || $contentType[0] != 'application/json') {
-            throw new Exception\RequestException('Could not get valid "application/json" response from "' . $request->getUri() . '". Response is "' . $response->getBody()->getContents() . '"');
+            throw new Exception\RequestException('Could not get valid "application/json" response from "'.$request->getUri().'". Response is "'.$response->getBody()->getContents().'"');
         }
 
         $content = json_decode($response->getBody()->getContents());
@@ -151,45 +145,42 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
          * No result
          */
         if (isset($content->message_code) && $content->message_code == 'no_user_agent') {
-            throw new Exception\NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new Exception\NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         /*
          * Limit exceeded
          */
         if (isset($content->message_code) && $content->message_code == 'usage_limit_exceeded') {
-            throw new Exception\LimitationExceededException('Exceeded the maximum number of request with API key "' . $this->apiKey . '" for ' . $this->getName());
+            throw new Exception\LimitationExceededException('Exceeded the maximum number of request with API key "'.$this->apiKey.'" for '.$this->getName());
         }
 
         /*
          * Error
          */
         if (isset($content->message_code) && $content->message_code == 'no_api_user_key') {
-            throw new Exception\InvalidCredentialsException('Missing API key for ' . $this->getName());
+            throw new Exception\InvalidCredentialsException('Missing API key for '.$this->getName());
         }
 
         if (isset($content->message_code) && $content->message_code == 'user_key_invalid') {
-            throw new Exception\InvalidCredentialsException('Your API key "' . $this->apiKey . '" is not valid for ' . $this->getName());
+            throw new Exception\InvalidCredentialsException('Your API key "'.$this->apiKey.'" is not valid for '.$this->getName());
         }
 
         if (! isset($content->result) || $content->result !== 'success') {
-            throw new Exception\RequestException('Could not get valid response from "' . $request->getUri() . '". Response is "' . $response->getBody()->getContents() . '"');
+            throw new Exception\RequestException('Could not get valid response from "'.$request->getUri().'". Response is "'.$response->getBody()->getContents().'"');
         }
 
         /*
          * Missing data?
          */
         if (! $content instanceof stdClass || ! isset($content->parse) || ! $content->parse instanceof stdClass) {
-            throw new Exception\RequestException('Could not get valid response from "' . $request->getUri() . '". Response is "' . print_r($content, true) . '"');
+            throw new Exception\RequestException('Could not get valid response from "'.$request->getUri().'". Response is "'.print_r($content, true).'"');
         }
 
         return $content->parse;
     }
 
     /**
-     *
-     * @param stdClass $resultRaw
-     *
      * @return bool
      */
     private function hasResult(stdClass $resultRaw)
@@ -210,33 +201,15 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
             return true;
         }
 
-        if (isset($resultRaw->operating_platform_vendor_name) && $this->isRealResult($resultRaw->operating_platform_vendor_name) === true) {
-            return true;
-        }
-
-        return false;
+        return isset($resultRaw->operating_platform_vendor_name) && $this->isRealResult($resultRaw->operating_platform_vendor_name) === true;
     }
 
-    /**
-     *
-     * @param  stdClass $resultRaw
-     * @return boolean
-     */
-    private function isBot(stdClass $resultRaw)
+    private function isBot(stdClass $resultRaw): bool
     {
-        if (isset($resultRaw->software_type) && $resultRaw->software_type === 'bot') {
-            return true;
-        }
-
-        return false;
+        return isset($resultRaw->software_type) && $resultRaw->software_type === 'bot';
     }
 
-    /**
-     *
-     * @param Model\Bot $bot
-     * @param stdClass  $resultRaw
-     */
-    private function hydrateBot(Model\Bot $bot, stdClass $resultRaw)
+    private function hydrateBot(Model\Bot $bot, stdClass $resultRaw): void
     {
         $bot->setIsBot(true);
 
@@ -249,12 +222,7 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
         }
     }
 
-    /**
-     *
-     * @param Model\Browser $browser
-     * @param stdClass      $resultRaw
-     */
-    private function hydrateBrowser(Model\Browser $browser, stdClass $resultRaw)
+    private function hydrateBrowser(Model\Browser $browser, stdClass $resultRaw): void
     {
         if (isset($resultRaw->browser_name)) {
             $browser->setName($this->getRealResult($resultRaw->browser_name, 'browser', 'name'));
@@ -265,12 +233,7 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
         }
     }
 
-    /**
-     *
-     * @param Model\RenderingEngine $engine
-     * @param stdClass              $resultRaw
-     */
-    private function hydrateRenderingEngine(Model\RenderingEngine $engine, stdClass $resultRaw)
+    private function hydrateRenderingEngine(Model\RenderingEngine $engine, stdClass $resultRaw): void
     {
         if (isset($resultRaw->layout_engine_name)) {
             $engine->setName($this->getRealResult($resultRaw->layout_engine_name));
@@ -281,12 +244,7 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
         }
     }
 
-    /**
-     *
-     * @param Model\OperatingSystem $os
-     * @param stdClass              $resultRaw
-     */
-    private function hydrateOperatingSystem(Model\OperatingSystem $os, stdClass $resultRaw)
+    private function hydrateOperatingSystem(Model\OperatingSystem $os, stdClass $resultRaw): void
     {
         if (isset($resultRaw->operating_system_name)) {
             $os->setName($this->getRealResult($resultRaw->operating_system_name, 'operatingSystem', 'name'));
@@ -297,12 +255,7 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
         }
     }
 
-    /**
-     *
-     * @param Model\Device $device
-     * @param stdClass     $resultRaw
-     */
-    private function hydrateDevice(Model\Device $device, stdClass $resultRaw)
+    private function hydrateDevice(Model\Device $device, stdClass $resultRaw): void
     {
         if (isset($resultRaw->operating_platform)) {
             $device->setModel($this->getRealResult($resultRaw->operating_platform, 'device', 'model'));
@@ -317,7 +270,7 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
         }
     }
 
-    public function parse($userAgent, array $headers = [])
+    public function parse($userAgent, array $headers = []): \UserAgentParser\Model\UserAgent
     {
         $resultRaw = $this->getResult($userAgent, $headers);
 
@@ -325,7 +278,7 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
          * No result found?
          */
         if ($this->hasResult($resultRaw) !== true) {
-            throw new Exception\NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new Exception\NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         /*
@@ -337,7 +290,7 @@ class WhatIsMyBrowserCom extends AbstractHttpProvider
         /*
          * Bot detection
          */
-        if ($this->isBot($resultRaw) === true) {
+        if ($this->isBot($resultRaw)) {
             $this->hydrateBot($result->getBot(), $resultRaw);
 
             return $result;

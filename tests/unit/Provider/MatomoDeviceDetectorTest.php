@@ -1,12 +1,11 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider;
 
 use DeviceDetector\DeviceDetector;
 use UserAgentParser\Provider\MatomoDeviceDetector;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -15,91 +14,88 @@ use UserAgentParser\Provider\MatomoDeviceDetector;
 class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements RequiredProviderTestInterface
 {
     /**
-     *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getParser()
+    private function getParser(): \PHPUnit\Framework\MockObject\MockObject
     {
-        $parser = self::createMock('DeviceDetector\DeviceDetector');
-
-        return $parser;
+        return self::createMock(\DeviceDetector\DeviceDetector::class);
     }
 
-    public function testGetName()
+    public function test_get_name(): void
     {
-        $provider = new MatomoDeviceDetector();
+        $provider = new MatomoDeviceDetector;
 
         $this->assertEquals('MatomoDeviceDetector', $provider->getName());
     }
 
-    public function testGetHomepage()
+    public function test_get_homepage(): void
     {
-        $provider = new MatomoDeviceDetector();
+        $provider = new MatomoDeviceDetector;
 
         $this->assertEquals('https://github.com/matomo-org/device-detector', $provider->getHomepage());
     }
 
-    public function testGetPackageName()
+    public function test_get_package_name(): void
     {
-        $provider = new MatomoDeviceDetector();
+        $provider = new MatomoDeviceDetector;
 
         $this->assertEquals('matomo/device-detector', $provider->getPackageName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
-        $provider = new MatomoDeviceDetector();
+        $provider = new MatomoDeviceDetector;
 
-        $this->assertInternalType('string', $provider->getVersion());
+        $this->assertIsString($provider->getVersion());
     }
 
-    public function testUpdateDate()
+    public function test_update_date(): void
     {
-        $provider = new MatomoDeviceDetector();
+        $provider = new MatomoDeviceDetector;
 
         $this->assertInstanceOf('DateTime', $provider->getUpdateDate());
     }
 
-    public function testDetectionCapabilities()
+    public function test_detection_capabilities(): void
     {
-        $provider = new MatomoDeviceDetector();
+        $provider = new MatomoDeviceDetector;
 
         $this->assertEquals([
 
             'browser' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'renderingEngine' => [
-                'name'    => true,
+                'name' => true,
                 'version' => false,
             ],
 
             'operatingSystem' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'device' => [
-                'model'    => true,
-                'brand'    => true,
-                'type'     => true,
+                'model' => true,
+                'brand' => true,
+                'type' => true,
                 'isMobile' => true,
-                'isTouch'  => true,
+                'isTouch' => true,
             ],
 
             'bot' => [
                 'isBot' => true,
-                'name'  => true,
-                'type'  => true,
+                'name' => true,
+                'type' => true,
             ],
         ], $provider->getDetectionCapabilities());
     }
 
-    public function testIsRealResult()
+    public function test_is_real_result(): void
     {
-        $provider = new MatomoDeviceDetector();
+        $provider = new MatomoDeviceDetector;
 
         /*
          * general
@@ -120,10 +116,10 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
         $this->assertIsRealResult($provider, true, 'something Generic Bot', 'bot', 'name');
     }
 
-    public function testParser()
+    public function test_parser(): void
     {
-        $provider = new MatomoDeviceDetector();
-        $this->assertInstanceOf('DeviceDetector\DeviceDetector', $provider->getParser());
+        $provider = new MatomoDeviceDetector;
+        $this->assertInstanceOf(\DeviceDetector\DeviceDetector::class, $provider->getParser());
 
         $parser = $this->getParser();
 
@@ -132,39 +128,37 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
         $this->assertSame($parser, $provider->getParser());
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundException()
+    public function test_parse_no_result_found_exception(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $parser = $this->getParser();
 
         $provider = new MatomoDeviceDetector($parser);
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundExceptionDefaultValue()
+    public function test_parse_no_result_found_exception_default_value(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $parser = $this->getParser();
         $parser->expects($this->any())
             ->method('getClient')
             ->will($this->returnValue([
-            'name' => 'UNK',
-        ]));
+                'name' => 'UNK',
+            ]));
 
         $provider = new MatomoDeviceDetector($parser);
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * Provider name and version in result?
      */
-    public function testProviderNameAndVersionIsInResult()
+    public function test_provider_name_and_version_is_in_result(): void
     {
         $parser = $this->getParser();
         $parser->expects($this->any())
@@ -173,22 +167,22 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
         $parser->expects($this->any())
             ->method('getBot')
             ->will($this->returnValue([
-            'name'     => 'Hatena RSS',
-            'category' => 'something',
-        ]));
+                'name' => 'Hatena RSS',
+                'category' => 'something',
+            ]));
 
         $provider = new MatomoDeviceDetector($parser);
 
         $result = $provider->parse('A real user agent...');
 
         $this->assertEquals('MatomoDeviceDetector', $result->getProviderName());
-        $this->assertRegExp('/\d{1,}\.\d{1,}/', $result->getProviderVersion());
+        $this->assertMatchesRegularExpression('/\d{1,}\.\d{1,}/', $result->getProviderVersion());
     }
 
     /**
      * Bot
      */
-    public function testParseBot()
+    public function test_parse_bot(): void
     {
         $parser = $this->getParser();
         $parser->expects($this->any())
@@ -197,9 +191,9 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
         $parser->expects($this->any())
             ->method('getBot')
             ->will($this->returnValue([
-            'name'     => 'Hatena RSS',
-            'category' => 'something',
-        ]));
+                'name' => 'Hatena RSS',
+                'category' => 'something',
+            ]));
 
         $provider = new MatomoDeviceDetector($parser);
 
@@ -208,8 +202,8 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Hatena RSS',
-                'type'  => 'something',
+                'name' => 'Hatena RSS',
+                'type' => 'something',
             ],
         ];
 
@@ -219,7 +213,7 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
     /**
      * Bot - name default
      */
-    public function testParseBotNameDefault()
+    public function test_parse_bot_name_default(): void
     {
         $parser = $this->getParser();
         $parser->expects($this->any())
@@ -228,8 +222,8 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
         $parser->expects($this->any())
             ->method('getBot')
             ->will($this->returnValue([
-            'name' => 'Bot',
-        ]));
+                'name' => 'Bot',
+            ]));
 
         $provider = new MatomoDeviceDetector($parser);
 
@@ -238,8 +232,8 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ];
 
@@ -249,7 +243,7 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
     /**
      * Bot - name default
      */
-    public function testParseBotNameDefault2()
+    public function test_parse_bot_name_default2(): void
     {
         $parser = $this->getParser();
         $parser->expects($this->any())
@@ -258,8 +252,8 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
         $parser->expects($this->any())
             ->method('getBot')
             ->will($this->returnValue([
-            'name' => 'Generic Bot',
-        ]));
+                'name' => 'Generic Bot',
+            ]));
 
         $provider = new MatomoDeviceDetector($parser);
 
@@ -268,8 +262,8 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ];
 
@@ -279,16 +273,16 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
     /**
      * Browser only
      */
-    public function testParseBrowser()
+    public function test_parse_browser(): void
     {
         $parser = $this->getParser();
         $parser->expects($this->any())
             ->method('getClient')
             ->will($this->returnValue([
-            'name'    => 'Firefox',
-            'version' => '3.0',
-            'engine'  => 'WebKit',
-        ]));
+                'name' => 'Firefox',
+                'version' => '3.0',
+                'engine' => 'WebKit',
+            ]));
         $parser->expects($this->any())
             ->method('getOs')
             ->will($this->returnValue([]));
@@ -299,7 +293,7 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Firefox',
+                'name' => 'Firefox',
                 'version' => [
                     'major' => 3,
                     'minor' => 0,
@@ -312,7 +306,7 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
             ],
 
             'renderingEngine' => [
-                'name'    => 'WebKit',
+                'name' => 'WebKit',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -331,20 +325,20 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
     /**
      * OS only
      */
-    public function testParseOperatingSystem()
+    public function test_parse_operating_system(): void
     {
         $parser = $this->getParser();
         $parser->expects($this->any())
             ->method('getClient')
             ->will($this->returnValue([
-            'engine' => DeviceDetector::UNKNOWN,
-        ]));
+                'engine' => DeviceDetector::UNKNOWN,
+            ]));
         $parser->expects($this->any())
             ->method('getOs')
             ->will($this->returnValue([
-            'name'    => 'Windows',
-            'version' => '7.0',
-        ]));
+                'name' => 'Windows',
+                'version' => '7.0',
+            ]));
 
         $provider = new MatomoDeviceDetector($parser);
 
@@ -352,7 +346,7 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
 
         $expectedResult = [
             'operatingSystem' => [
-                'name'    => 'Windows',
+                'name' => 'Windows',
                 'version' => [
                     'major' => 7,
                     'minor' => 0,
@@ -371,7 +365,7 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
     /**
      * Device only
      */
-    public function testParseDevice()
+    public function test_parse_device(): void
     {
         $parser = $this->getParser();
         $parser->expects($this->any())
@@ -411,10 +405,10 @@ class MatomoDeviceDetectorTest extends AbstractProviderTestCase implements Requi
             'device' => [
                 'model' => 'iPhone',
                 'brand' => 'Apple',
-                'type'  => 'smartphone',
+                'type' => 'smartphone',
 
                 'isMobile' => true,
-                'isTouch'  => true,
+                'isTouch' => true,
             ],
         ];
 

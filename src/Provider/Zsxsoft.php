@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider;
 
 use UserAgent;
@@ -11,6 +12,7 @@ use UserAgentParser\Model;
  *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
+ *
  * @see https://github.com/zsxsoft/php-useragent
  */
 class Zsxsoft extends AbstractProvider
@@ -39,32 +41,32 @@ class Zsxsoft extends AbstractProvider
     protected $detectionCapabilities = [
 
         'browser' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'renderingEngine' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'operatingSystem' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'device' => [
-            'model'    => true,
-            'brand'    => true,
-            'type'     => false,
+            'model' => true,
+            'brand' => true,
+            'type' => false,
             'isMobile' => false,
-            'isTouch'  => false,
+            'isTouch' => false,
         ],
 
         'bot' => [
             'isBot' => false,
-            'name'  => false,
-            'type'  => false,
+            'name' => false,
+            'type' => false,
         ],
     ];
 
@@ -88,43 +90,32 @@ class Zsxsoft extends AbstractProvider
         ],
     ];
 
-    private $parser;
+    private ?\UserAgent $parser;
 
     /**
-     *
-     * @param  UserAgent                 $parser
      * @throws PackageNotLoadedException
      */
-    public function __construct(UserAgent $parser = null)
+    public function __construct(?UserAgent $parser = null)
     {
-        if ($parser === null) {
+        if (! $parser instanceof \UserAgent) {
             $this->checkIfInstalled();
         }
 
         $this->parser = $parser;
     }
 
-    /**
-     *
-     * @return UserAgent
-     */
-    public function getParser()
+    public function getParser(): \UserAgent
     {
-        if ($this->parser !== null) {
+        if ($this->parser instanceof \UserAgent) {
             return $this->parser;
         }
 
-        $this->parser = new UserAgent();
+        $this->parser = new UserAgent;
 
         return $this->parser;
     }
 
     /**
-     *
-     * @param array $browser
-     * @param array $os
-     * @param array $device
-     *
      * @return bool
      */
     private function hasResult(array $browser, array $os, array $device)
@@ -141,19 +132,10 @@ class Zsxsoft extends AbstractProvider
             return true;
         }
 
-        if (isset($device['model']) && $this->isRealResult($device['model'], 'device', 'model')) {
-            return true;
-        }
-
-        return false;
+        return isset($device['model']) && $this->isRealResult($device['model'], 'device', 'model');
     }
 
-    /**
-     *
-     * @param Model\Browser $browser
-     * @param array         $browserRaw
-     */
-    private function hydrateBrowser(Model\Browser $browser, array $browserRaw)
+    private function hydrateBrowser(Model\Browser $browser, array $browserRaw): void
     {
         if (isset($browserRaw['name'])) {
             $browser->setName($this->getRealResult($browserRaw['name'], 'browser', 'name'));
@@ -164,12 +146,7 @@ class Zsxsoft extends AbstractProvider
         }
     }
 
-    /**
-     *
-     * @param Model\OperatingSystem $os
-     * @param array                 $osRaw
-     */
-    private function hydrateOperatingSystem(Model\OperatingSystem $os, array $osRaw)
+    private function hydrateOperatingSystem(Model\OperatingSystem $os, array $osRaw): void
     {
         if (isset($osRaw['name'])) {
             $os->setName($this->getRealResult($osRaw['name']));
@@ -180,12 +157,7 @@ class Zsxsoft extends AbstractProvider
         }
     }
 
-    /**
-     *
-     * @param Model\Device $device
-     * @param array        $deviceRaw
-     */
-    private function hydrateDevice(Model\Device $device, array $deviceRaw)
+    private function hydrateDevice(Model\Device $device, array $deviceRaw): void
     {
         if (isset($deviceRaw['model'])) {
             $device->setModel($this->getRealResult($deviceRaw['model'], 'device', 'model'));
@@ -196,21 +168,21 @@ class Zsxsoft extends AbstractProvider
         }
     }
 
-    public function parse($userAgent, array $headers = [])
+    public function parse($userAgent, array $headers = []): \UserAgentParser\Model\UserAgent
     {
         $parser = $this->getParser();
         $parser->analyze($userAgent);
 
-        $browser  = $parser->browser;
-        $os       = $parser->os;
-        $device   = $parser->device;
+        $browser = $parser->browser;
+        $os = $parser->os;
+        $device = $parser->device;
         $platform = $parser->platform;
 
         /*
          * No result found?
          */
         if ($this->hasResult($browser, $os, $device) !== true) {
-            throw new NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         /*
@@ -218,9 +190,9 @@ class Zsxsoft extends AbstractProvider
          */
         $result = new Model\UserAgent($this->getName(), $this->getVersion());
         $result->setProviderResultRaw([
-            'browser'  => $browser,
-            'os'       => $os,
-            'device'   => $device,
+            'browser' => $browser,
+            'os' => $os,
+            'device' => $device,
             'platform' => $platform,
         ]);
 

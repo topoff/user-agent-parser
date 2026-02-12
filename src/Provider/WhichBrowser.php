@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider;
 
 use UserAgentParser\Exception\NoResultFoundException;
@@ -12,6 +13,7 @@ use WhichBrowser\Parser as WhichBrowserParser;
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @author Niels Leenheer <niels@leenheer.nl>
  * @license MIT
+ *
  * @see https://github.com/WhichBrowser/Parser
  */
 class WhichBrowser extends AbstractProvider
@@ -40,32 +42,32 @@ class WhichBrowser extends AbstractProvider
     protected $detectionCapabilities = [
 
         'browser' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'renderingEngine' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'operatingSystem' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'device' => [
-            'model'    => true,
-            'brand'    => true,
-            'type'     => true,
+            'model' => true,
+            'brand' => true,
+            'type' => true,
             'isMobile' => true,
-            'isTouch'  => false,
+            'isTouch' => false,
         ],
 
         'bot' => [
             'isBot' => true,
-            'name'  => true,
-            'type'  => false,
+            'name' => true,
+            'type' => false,
         ],
     ];
 
@@ -77,7 +79,6 @@ class WhichBrowser extends AbstractProvider
     private $parser;
 
     /**
-     *
      * @throws PackageNotLoadedException
      */
     public function __construct()
@@ -86,8 +87,6 @@ class WhichBrowser extends AbstractProvider
     }
 
     /**
-     *
-     * @param  array              $headers
      * @return WhichBrowserParser
      */
     public function getParser(array $headers)
@@ -99,23 +98,13 @@ class WhichBrowser extends AbstractProvider
         return new WhichBrowserParser($headers);
     }
 
-    /**
-     *
-     * @param Model\Bot                   $bot
-     * @param \WhichBrowser\Model\Browser $browserRaw
-     */
-    private function hydrateBot(Model\Bot $bot, \WhichBrowser\Model\Browser $browserRaw)
+    private function hydrateBot(Model\Bot $bot, \WhichBrowser\Model\Browser $browserRaw): void
     {
         $bot->setIsBot(true);
         $bot->setName($this->getRealResult($browserRaw->getName()));
     }
 
-    /**
-     *
-     * @param Model\Browser               $browser
-     * @param \WhichBrowser\Model\Browser $browserRaw
-     */
-    private function hydrateBrowser(Model\Browser $browser, \WhichBrowser\Model\Browser $browserRaw)
+    private function hydrateBrowser(Model\Browser $browser, \WhichBrowser\Model\Browser $browserRaw): void
     {
         if ($this->isRealResult($browserRaw->getName(), 'browser', 'name') === true) {
             $browser->setName($browserRaw->getName());
@@ -124,7 +113,7 @@ class WhichBrowser extends AbstractProvider
             return;
         }
 
-        if (isset($browserRaw->using) && $browserRaw->using instanceof \WhichBrowser\Model\Using) {
+        if ($browserRaw->using !== null && $browserRaw->using instanceof \WhichBrowser\Model\Using) {
             /* @var $usingRaw \WhichBrowser\Model\Using */
             $usingRaw = $browserRaw->using;
 
@@ -136,35 +125,19 @@ class WhichBrowser extends AbstractProvider
         }
     }
 
-    /**
-     *
-     * @param Model\RenderingEngine      $engine
-     * @param \WhichBrowser\Model\Engine $engineRaw
-     */
-    private function hydrateRenderingEngine(Model\RenderingEngine $engine, \WhichBrowser\Model\Engine $engineRaw)
+    private function hydrateRenderingEngine(Model\RenderingEngine $engine, \WhichBrowser\Model\Engine $engineRaw): void
     {
         $engine->setName($this->getRealResult($engineRaw->getName()));
         $engine->getVersion()->setComplete($this->getRealResult($engineRaw->getVersion()));
     }
 
-    /**
-     *
-     * @param Model\OperatingSystem  $os
-     * @param \WhichBrowser\Model\Os $osRaw
-     */
-    private function hydrateOperatingSystem(Model\OperatingSystem $os, \WhichBrowser\Model\Os $osRaw)
+    private function hydrateOperatingSystem(Model\OperatingSystem $os, \WhichBrowser\Model\Os $osRaw): void
     {
         $os->setName($this->getRealResult($osRaw->getName()));
         $os->getVersion()->setComplete($this->getRealResult($osRaw->getVersion()));
     }
 
-    /**
-     *
-     * @param Model\Device               $device
-     * @param \WhichBrowser\Model\Device $deviceRaw
-     * @param WhichBrowserParser         $parser
-     */
-    private function hydrateDevice(Model\Device $device, \WhichBrowser\Model\Device $deviceRaw, WhichBrowserParser $parser)
+    private function hydrateDevice(Model\Device $device, \WhichBrowser\Model\Device $deviceRaw, WhichBrowserParser $parser): void
     {
         $device->setModel($this->getRealResult($deviceRaw->getModel()));
         $device->setBrand($this->getRealResult($deviceRaw->getManufacturer()));
@@ -175,7 +148,7 @@ class WhichBrowser extends AbstractProvider
         }
     }
 
-    public function parse($userAgent, array $headers = [])
+    public function parse($userAgent, array $headers = []): \UserAgentParser\Model\UserAgent
     {
         $headers['User-Agent'] = $userAgent;
 
@@ -185,7 +158,7 @@ class WhichBrowser extends AbstractProvider
          * No result found?
          */
         if ($parser->isDetected() !== true) {
-            throw new NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         /*

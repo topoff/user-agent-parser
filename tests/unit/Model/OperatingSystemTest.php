@@ -1,23 +1,22 @@
 <?php
+
 namespace UserAgentParserTest;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use UserAgentParser\Model\OperatingSystem;
 use UserAgentParser\Model\Version;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
  * @covers UserAgentParser\Model\OperatingSystem
  */
-class OperatingSystemTest extends PHPUnit_Framework_TestCase
+class OperatingSystemTest extends TestCase
 {
-    public function testName()
+    public function test_name(): void
     {
-        $os = new OperatingSystem();
+        $os = new OperatingSystem;
 
         $this->assertNull($os->getName());
 
@@ -26,30 +25,30 @@ class OperatingSystemTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($name, $os->getName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
-        $os = new OperatingSystem();
+        $os = new OperatingSystem;
 
-        $this->assertInstanceOf('UserAgentParser\Model\Version', $os->getVersion());
+        $this->assertInstanceOf(\UserAgentParser\Model\Version::class, $os->getVersion());
 
-        $version = new Version();
+        $version = new Version;
         $os->setVersion($version);
         $this->assertSame($version, $os->getVersion());
     }
 
-    public function testToArray()
+    public function test_to_array(): void
     {
-        $os = new OperatingSystem();
+        $os = new OperatingSystem;
 
         $this->assertEquals([
-            'name'    => null,
+            'name' => null,
             'version' => $os->getVersion()
                 ->toArray(),
         ], $os->toArray());
 
         $os->setName('Linux');
         $this->assertEquals([
-            'name'    => 'Linux',
+            'name' => 'Linux',
             'version' => $os->getVersion()
                 ->toArray(),
         ], $os->toArray());

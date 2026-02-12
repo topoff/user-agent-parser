@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider;
 
 use UserAgentParser\Exception\NoResultFoundException;
@@ -12,6 +13,7 @@ use Woothee\DataSet;
  *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
+ *
  * @see https://github.com/woothee/woothee-php
  */
 class Woothee extends AbstractProvider
@@ -40,32 +42,32 @@ class Woothee extends AbstractProvider
     protected $detectionCapabilities = [
 
         'browser' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'renderingEngine' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'operatingSystem' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'device' => [
-            'model'    => false,
-            'brand'    => false,
-            'type'     => true,
+            'model' => false,
+            'brand' => false,
+            'type' => true,
             'isMobile' => false,
-            'isTouch'  => false,
+            'isTouch' => false,
         ],
 
         'bot' => [
             'isBot' => true,
-            'name'  => true,
-            'type'  => false,
+            'name' => true,
+            'type' => false,
         ],
     ];
 
@@ -88,10 +90,9 @@ class Woothee extends AbstractProvider
         ],
     ];
 
-    private $parser;
+    private ?\Woothee\Classifier $parser = null;
 
     /**
-     *
      * @throws PackageNotLoadedException
      */
     public function __construct()
@@ -99,25 +100,18 @@ class Woothee extends AbstractProvider
         $this->checkIfInstalled();
     }
 
-    /**
-     *
-     * @return Classifier
-     */
-    public function getParser()
+    public function getParser(): \Woothee\Classifier
     {
-        if ($this->parser !== null) {
+        if ($this->parser instanceof \Woothee\Classifier) {
             return $this->parser;
         }
 
-        $this->parser = new Classifier();
+        $this->parser = new Classifier;
 
         return $this->parser;
     }
 
     /**
-     *
-     * @param array $resultRaw
-     *
      * @return bool
      */
     private function hasResult(array $resultRaw)
@@ -126,33 +120,15 @@ class Woothee extends AbstractProvider
             return true;
         }
 
-        if (isset($resultRaw['name']) && $this->isRealResult($resultRaw['name'])) {
-            return true;
-        }
-
-        return false;
+        return isset($resultRaw['name']) && $this->isRealResult($resultRaw['name']);
     }
 
-    /**
-     *
-     * @param  array   $resultRaw
-     * @return boolean
-     */
-    private function isBot(array $resultRaw)
+    private function isBot(array $resultRaw): bool
     {
-        if (isset($resultRaw['category']) && $resultRaw['category'] === DataSet::DATASET_CATEGORY_CRAWLER) {
-            return true;
-        }
-
-        return false;
+        return isset($resultRaw['category']) && $resultRaw['category'] === DataSet::DATASET_CATEGORY_CRAWLER;
     }
 
-    /**
-     *
-     * @param Model\Bot $bot
-     * @param array     $resultRaw
-     */
-    private function hydrateBot(Model\Bot $bot, array $resultRaw)
+    private function hydrateBot(Model\Bot $bot, array $resultRaw): void
     {
         $bot->setIsBot(true);
 
@@ -161,12 +137,7 @@ class Woothee extends AbstractProvider
         }
     }
 
-    /**
-     *
-     * @param Model\Browser $browser
-     * @param array         $resultRaw
-     */
-    private function hydrateBrowser(Model\Browser $browser, array $resultRaw)
+    private function hydrateBrowser(Model\Browser $browser, array $resultRaw): void
     {
         if (isset($resultRaw['name'])) {
             $browser->setName($this->getRealResult($resultRaw['name']));
@@ -177,19 +148,14 @@ class Woothee extends AbstractProvider
         }
     }
 
-    /**
-     *
-     * @param Model\Device $device
-     * @param array        $resultRaw
-     */
-    private function hydrateDevice(Model\Device $device, array $resultRaw)
+    private function hydrateDevice(Model\Device $device, array $resultRaw): void
     {
         if (isset($resultRaw['category'])) {
             $device->setType($this->getRealResult($resultRaw['category'], 'device', 'type'));
         }
     }
 
-    public function parse($userAgent, array $headers = [])
+    public function parse($userAgent, array $headers = []): \UserAgentParser\Model\UserAgent
     {
         $parser = $this->getParser();
 
@@ -199,7 +165,7 @@ class Woothee extends AbstractProvider
          * No result found?
          */
         if ($this->hasResult($resultRaw) !== true) {
-            throw new NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         /*
@@ -211,7 +177,7 @@ class Woothee extends AbstractProvider
         /*
          * Bot detection
          */
-        if ($this->isBot($resultRaw) === true) {
+        if ($this->isBot($resultRaw)) {
             $this->hydrateBot($result->getBot(), $resultRaw);
 
             return $result;

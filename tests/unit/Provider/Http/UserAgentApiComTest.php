@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider\Http;
 
 use GuzzleHttp\Psr7\Response;
@@ -8,8 +9,6 @@ use UserAgentParserTest\Unit\Provider\AbstractProviderTestCase;
 use UserAgentParserTest\Unit\Provider\RequiredProviderTestInterface;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -17,79 +16,79 @@ use UserAgentParserTest\Unit\Provider\RequiredProviderTestInterface;
  */
 class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredProviderTestInterface
 {
-    public function testGetName()
+    public function test_get_name(): void
     {
         $provider = new UserAgentApiCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals('UserAgentApiCom', $provider->getName());
     }
 
-    public function testGetHomepage()
+    public function test_get_homepage(): void
     {
         $provider = new UserAgentApiCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals('http://useragentapi.com/', $provider->getHomepage());
     }
 
-    public function testGetPackageName()
+    public function test_get_package_name(): void
     {
         $provider = new UserAgentApiCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getPackageName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
         $provider = new UserAgentApiCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getVersion());
     }
 
-    public function testUpdateDate()
+    public function test_update_date(): void
     {
         $provider = new UserAgentApiCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getUpdateDate());
     }
 
-    public function testDetectionCapabilities()
+    public function test_detection_capabilities(): void
     {
         $provider = new UserAgentApiCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals([
 
             'browser' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'renderingEngine' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'operatingSystem' => [
-                'name'    => false,
+                'name' => false,
                 'version' => false,
             ],
 
             'device' => [
-                'model'    => false,
-                'brand'    => false,
-                'type'     => true,
+                'model' => false,
+                'brand' => false,
+                'type' => true,
                 'isMobile' => false,
-                'isTouch'  => false,
+                'isTouch' => false,
             ],
 
             'bot' => [
                 'isBot' => true,
-                'name'  => true,
-                'type'  => false,
+                'name' => true,
+                'type' => false,
             ],
         ], $provider->getDetectionCapabilities());
     }
 
-    public function testIsRealResult()
+    public function test_is_real_result(): void
     {
         $provider = new UserAgentApiCom($this->getClient(), 'apiKey123');
 
@@ -101,11 +100,11 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
 
     /**
      * Empty user agent
-     *
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
      */
-    public function testParseNoResultFoundExceptionEmptyUserAgent()
+    public function test_parse_no_result_found_exception_empty_user_agent(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $responseQueue = [
             new Response(200),
         ];
@@ -117,13 +116,13 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
 
     /**
      * 400 - key_invalid
-     *
-     * @expectedException \UserAgentParser\Exception\InvalidCredentialsException
      */
-    public function testParseInvalidCredentialsException()
+    public function test_parse_invalid_credentials_exception(): void
     {
-        $rawResult              = new stdClass();
-        $rawResult->error       = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\InvalidCredentialsException::class);
+
+        $rawResult = new stdClass;
+        $rawResult->error = new stdClass;
         $rawResult->error->code = 'key_invalid';
 
         $responseQueue = [
@@ -137,13 +136,13 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
 
     /**
      * 400 - useragent_invalid
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestExceptionUserAgentInvalid()
+    public function test_parse_request_exception_user_agent_invalid(): void
     {
-        $rawResult              = new stdClass();
-        $rawResult->error       = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
+        $rawResult = new stdClass;
+        $rawResult->error = new stdClass;
         $rawResult->error->code = 'useragent_invalid';
 
         $responseQueue = [
@@ -157,11 +156,11 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
 
     /**
      * 500
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestException()
+    public function test_parse_request_exception(): void
     {
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
         $responseQueue = [
             new Response(500),
         ];
@@ -173,11 +172,11 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
 
     /**
      * No JSON returned
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestExceptionContentType()
+    public function test_parse_request_exception_content_type(): void
     {
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
         $responseQueue = [
             new Response(200, [
                 'Content-Type' => 'text/html',
@@ -191,13 +190,13 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
 
     /**
      * No result found
-     *
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
      */
-    public function testParseNoResultFoundException()
+    public function test_parse_no_result_found_exception(): void
     {
-        $rawResult              = new stdClass();
-        $rawResult->error       = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $rawResult = new stdClass;
+        $rawResult->error = new stdClass;
         $rawResult->error->code = 'useragent_not_found';
 
         $responseQueue = [
@@ -213,12 +212,12 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
 
     /**
      * Missing data
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestExceptionNoData()
+    public function test_parse_request_exception_no_data(): void
     {
-        $rawResult = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
+        $rawResult = new stdClass;
 
         $responseQueue = [
             new Response(200, [
@@ -234,13 +233,13 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
     /**
      * Provider name and version in result?
      */
-    public function testProviderNameAndVersionIsInResult()
+    public function test_provider_name_and_version_is_in_result(): void
     {
-        $data                = new stdClass();
+        $data = new stdClass;
         $data->platform_type = 'Bot';
         $data->platform_name = 'Googlebot';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->data = $data;
 
         $responseQueue = [
@@ -260,13 +259,13 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
     /**
      * Bot
      */
-    public function testParseBot()
+    public function test_parse_bot(): void
     {
-        $data                = new stdClass();
+        $data = new stdClass;
         $data->platform_type = 'Bot';
         $data->platform_name = 'Googlebot';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->data = $data;
 
         $responseQueue = [
@@ -282,8 +281,8 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Googlebot',
-                'type'  => null,
+                'name' => 'Googlebot',
+                'type' => null,
             ],
         ];
 
@@ -293,13 +292,13 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
     /**
      * Browser only
      */
-    public function testParseBrowser()
+    public function test_parse_browser(): void
     {
-        $data                  = new stdClass();
-        $data->browser_name    = 'Firefox';
+        $data = new stdClass;
+        $data->browser_name = 'Firefox';
         $data->browser_version = '3.0.1';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->data = $data;
 
         $responseQueue = [
@@ -314,7 +313,7 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Firefox',
+                'name' => 'Firefox',
                 'version' => [
                     'major' => 3,
                     'minor' => 0,
@@ -333,13 +332,13 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
     /**
      * Rendering engine only
      */
-    public function testParseRenderingEngine()
+    public function test_parse_rendering_engine(): void
     {
-        $data                 = new stdClass();
-        $data->engine_name    = 'Webkit';
+        $data = new stdClass;
+        $data->engine_name = 'Webkit';
         $data->engine_version = '3.2.1';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->data = $data;
 
         $responseQueue = [
@@ -354,7 +353,7 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
 
         $expectedResult = [
             'renderingEngine' => [
-                'name'    => 'Webkit',
+                'name' => 'Webkit',
                 'version' => [
                     'major' => 3,
                     'minor' => 2,
@@ -373,12 +372,12 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
     /**
      * Device only
      */
-    public function testParseDevice()
+    public function test_parse_device(): void
     {
-        $data                = new stdClass();
+        $data = new stdClass;
         $data->platform_type = 'mobile';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->data = $data;
 
         $responseQueue = [
@@ -395,10 +394,10 @@ class UserAgentApiComTest extends AbstractProviderTestCase implements RequiredPr
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => 'mobile',
+                'type' => 'mobile',
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 

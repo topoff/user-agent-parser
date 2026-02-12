@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider;
 
 use UserAgentParser\Exception;
@@ -19,25 +20,14 @@ class Chain extends AbstractProvider
     protected $name = 'Chain';
 
     /**
-     *
-     * @var AbstractProvider[]
+     * @param  AbstractProvider[]  $providers
      */
-    private $providers = [];
+    public function __construct(private readonly array $providers = []) {}
 
     /**
-     *
-     * @param AbstractProvider[] $providers
-     */
-    public function __construct(array $providers = [])
-    {
-        $this->providers = $providers;
-    }
-
-    /**
-     *
      * @return AbstractProvider[]
      */
-    public function getProviders()
+    public function getProviders(): array
     {
         return $this->providers;
     }
@@ -49,11 +39,11 @@ class Chain extends AbstractProvider
 
             try {
                 return $provider->parse($userAgent, $headers);
-            } catch (Exception\NoResultFoundException $ex) {
+            } catch (Exception\NoResultFoundException) {
                 // just catch this and continue to the next provider
             }
         }
 
-        throw new Exception\NoResultFoundException('No result found for user agent: ' . $userAgent);
+        throw new Exception\NoResultFoundException('No result found for user agent: '.$userAgent);
     }
 }

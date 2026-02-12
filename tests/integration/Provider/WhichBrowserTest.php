@@ -1,11 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Integration\Provider;
 
 use UserAgentParser\Provider\WhichBrowser;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -13,15 +12,15 @@ use UserAgentParser\Provider\WhichBrowser;
  */
 class WhichBrowserTest extends AbstractProviderTestCase
 {
-    public function testRealResult()
+    public function test_real_result(): void
     {
-        $provider = new WhichBrowser();
+        $provider = new WhichBrowser;
 
         $parser = $provider->getParser([
             'User-Agent' => 'A real user agent...',
         ]);
 
-        $this->assertInstanceOf('WhichBrowser\Parser', $parser);
+        $this->assertInstanceOf(\WhichBrowser\Parser::class, $parser);
 
         /*
          * test method exists
@@ -34,21 +33,21 @@ class WhichBrowserTest extends AbstractProviderTestCase
         $this->assertTrue($class->hasMethod('isType'), 'method isType() does not exist anymore');
 
         $this->assertTrue($class->hasProperty('browser'), 'property browser does not exist anymore');
-        $this->assertInstanceOf('WhichBrowser\Model\Browser', $parser->browser);
+        $this->assertInstanceOf(\WhichBrowser\Model\Browser::class, $parser->browser);
 
         $this->assertTrue($class->hasProperty('engine'), 'property engine does not exist anymore');
-        $this->assertInstanceOf('WhichBrowser\Model\Engine', $parser->engine);
+        $this->assertInstanceOf(\WhichBrowser\Model\Engine::class, $parser->engine);
 
         $this->assertTrue($class->hasProperty('os'), 'property os does not exist anymore');
-        $this->assertInstanceOf('WhichBrowser\Model\Os', $parser->os);
+        $this->assertInstanceOf(\WhichBrowser\Model\Os::class, $parser->os);
 
         $this->assertTrue($class->hasProperty('device'), 'property device does not exist anymore');
-        $this->assertInstanceOf('WhichBrowser\Model\Device', $parser->device);
+        $this->assertInstanceOf(\WhichBrowser\Model\Device::class, $parser->device);
     }
 
-    public function testClassBrowserResult()
+    public function test_class_browser_result(): void
     {
-        $class = new \ReflectionClass('WhichBrowser\Model\Browser');
+        $class = new \ReflectionClass(\WhichBrowser\Model\Browser::class);
 
         $this->assertTrue($class->hasMethod('getName'), 'method getName() does not exist anymore');
         $this->assertTrue($class->hasMethod('getVersion'), 'method getVersion() does not exist anymore');
@@ -56,56 +55,55 @@ class WhichBrowserTest extends AbstractProviderTestCase
         $this->assertTrue($class->hasProperty('using'), 'property using does not exist anymore');
     }
 
-    public function testClassBrowserUsingResult()
+    public function test_class_browser_using_result(): void
     {
-        $class = new \ReflectionClass('WhichBrowser\Model\Using');
+        $class = new \ReflectionClass(\WhichBrowser\Model\Using::class);
 
         $this->assertTrue($class->hasMethod('getName'), 'method getName() does not exist anymore');
         $this->assertTrue($class->hasMethod('getVersion'), 'method getVersion() does not exist anymore');
     }
 
-    public function testClassEngineResult()
+    public function test_class_engine_result(): void
     {
-        $class = new \ReflectionClass('WhichBrowser\Model\Engine');
+        $class = new \ReflectionClass(\WhichBrowser\Model\Engine::class);
 
         $this->assertTrue($class->hasMethod('getName'), 'method getName() does not exist anymore');
         $this->assertTrue($class->hasMethod('getVersion'), 'method getVersion() does not exist anymore');
     }
 
-    public function testClassOsResult()
+    public function test_class_os_result(): void
     {
-        $class = new \ReflectionClass('WhichBrowser\Model\Os');
+        $class = new \ReflectionClass(\WhichBrowser\Model\Os::class);
 
         $this->assertTrue($class->hasMethod('getName'), 'method getName() does not exist anymore');
         $this->assertTrue($class->hasMethod('getVersion'), 'method getVersion() does not exist anymore');
     }
 
-    public function testClassDeviceResult()
+    public function test_class_device_result(): void
     {
-        $class = new \ReflectionClass('WhichBrowser\Model\Device');
+        $class = new \ReflectionClass(\WhichBrowser\Model\Device::class);
 
         $this->assertTrue($class->hasMethod('getModel'), 'method getModel() does not exist anymore');
         $this->assertTrue($class->hasMethod('getManufacturer'), 'method getManufacturer() does not exist anymore');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFound()
+    public function test_no_result_found(): void
     {
-        $provider = new WhichBrowser();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
 
-        $result = $provider->parse('...');
+        $provider = new WhichBrowser;
+
+        $provider->parse('...');
     }
 
-    public function testRealResultBot()
+    public function test_real_result_bot(): void
     {
-        $provider = new WhichBrowser();
+        $provider = new WhichBrowser;
 
         $result = $provider->parse('Googlebot/2.1 (+http://www.google.com/bot.html)');
         $this->assertEquals([
             'browser' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -117,7 +115,7 @@ class WhichBrowserTest extends AbstractProviderTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -129,7 +127,7 @@ class WhichBrowserTest extends AbstractProviderTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -143,15 +141,15 @@ class WhichBrowserTest extends AbstractProviderTestCase
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Googlebot',
-                'type'  => null,
+                'name' => 'Googlebot',
+                'type' => null,
             ],
         ], $result->toArray());
 
@@ -160,24 +158,24 @@ class WhichBrowserTest extends AbstractProviderTestCase
          */
         $rawResult = $result->getProviderResultRaw();
         $this->assertEquals([
-            'browser'   => [
-                'name'    => 'Googlebot',
+            'browser' => [
+                'name' => 'Googlebot',
                 'version' => '2.1',
             ],
-            'device'    => [
+            'device' => [
                 'type' => 'bot',
             ],
         ], $rawResult);
     }
 
-    public function testRealResultDevice()
+    public function test_real_result_device(): void
     {
-        $provider = new WhichBrowser();
+        $provider = new WhichBrowser;
 
         $result = $provider->parse('Mozilla/5.0 (Linux; Android 4.3; SCH-R970C Build/JSS15J) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.3');
         $this->assertEquals([
             'browser' => [
-                'name'    => 'Chrome',
+                'name' => 'Chrome',
                 'version' => [
                     'major' => 34,
                     'minor' => null,
@@ -189,7 +187,7 @@ class WhichBrowserTest extends AbstractProviderTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => 'Blink',
+                'name' => 'Blink',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -201,7 +199,7 @@ class WhichBrowserTest extends AbstractProviderTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => 'Android',
+                'name' => 'Android',
                 'version' => [
                     'major' => 4,
                     'minor' => 3,
@@ -215,15 +213,15 @@ class WhichBrowserTest extends AbstractProviderTestCase
             'device' => [
                 'model' => 'Galaxy S4',
                 'brand' => 'Samsung',
-                'type'  => 'mobile:smart',
+                'type' => 'mobile:smart',
 
                 'isMobile' => true,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => null,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ], $result->toArray());
 
@@ -232,23 +230,23 @@ class WhichBrowserTest extends AbstractProviderTestCase
          */
         $rawResult = $result->getProviderResultRaw();
         $this->assertEquals([
-            'browser'   => [
-                'name'    => 'Chrome',
+            'browser' => [
+                'name' => 'Chrome',
                 'version' => '34',
-                'type'    => 'browser',
+                'type' => 'browser',
             ],
             'engine' => [
-                'name'    => 'Blink',
+                'name' => 'Blink',
             ],
             'os' => [
-                'name'    => 'Android',
+                'name' => 'Android',
                 'version' => '4.3',
             ],
-            'device'    => [
-                'type'         => 'mobile',
-                'subtype'      => 'smart',
+            'device' => [
+                'type' => 'mobile',
+                'subtype' => 'smart',
                 'manufacturer' => 'Samsung',
-                'model'        => 'Galaxy S4',
+                'model' => 'Galaxy S4',
             ],
         ], $rawResult);
     }

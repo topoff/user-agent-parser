@@ -1,10 +1,10 @@
 <?php
+
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  */
+
 namespace UserAgentParser\Provider
 {
 
@@ -13,10 +13,9 @@ namespace UserAgentParser\Provider
     /**
      * This is need to mock the testing!
      *
-     * @param  string $userAgent
-     * @return array
+     * @param  string  $userAgent
      */
-    function parse_user_agent($userAgent)
+    function parse_user_agent($userAgent): array
     {
         return [
             'browser' => DonatjUAParserTest::$browser,
@@ -24,6 +23,7 @@ namespace UserAgentParser\Provider
         ];
     }
 }
+
 namespace UserAgentParserTest\Unit\Provider
 {
 
@@ -34,85 +34,85 @@ namespace UserAgentParserTest\Unit\Provider
      */
     class DonatjUAParserTest extends AbstractProviderTestCase implements RequiredProviderTestInterface
     {
-        public static $browser = null;
+        public static $browser;
 
-        public static $version = null;
+        public static $version;
 
-        public function testGetName()
+        public function test_get_name(): void
         {
-            $provider = new DonatjUAParser();
+            $provider = new DonatjUAParser;
 
             $this->assertEquals('DonatjUAParser', $provider->getName());
         }
 
-        public function testGetHomepage()
+        public function test_get_homepage(): void
         {
-            $provider = new DonatjUAParser();
+            $provider = new DonatjUAParser;
 
             $this->assertEquals('https://github.com/donatj/PhpUserAgent', $provider->getHomepage());
         }
 
-        public function testGetPackageName()
+        public function test_get_package_name(): void
         {
-            $provider = new DonatjUAParser();
+            $provider = new DonatjUAParser;
 
             $this->assertEquals('donatj/phpuseragentparser', $provider->getPackageName());
         }
 
-        public function testVersion()
+        public function test_version(): void
         {
-            $provider = new DonatjUAParser();
+            $provider = new DonatjUAParser;
 
-            $this->assertInternalType('string', $provider->getVersion());
+            $this->assertIsString($provider->getVersion());
         }
 
-        public function testUpdateDate()
+        public function test_update_date(): void
         {
-            $provider = new DonatjUAParser();
+            $provider = new DonatjUAParser;
 
             $this->assertInstanceOf('DateTime', $provider->getUpdateDate());
         }
 
-        public function testDetectionCapabilities()
+        public function test_detection_capabilities(): void
         {
-            $provider = new DonatjUAParser();
+            $provider = new DonatjUAParser;
 
             $this->assertEquals([
 
                 'browser' => [
-                    'name'    => true,
+                    'name' => true,
                     'version' => true,
                 ],
 
                 'renderingEngine' => [
-                    'name'    => false,
+                    'name' => false,
                     'version' => false,
                 ],
 
                 'operatingSystem' => [
-                    'name'    => false,
+                    'name' => false,
                     'version' => false,
                 ],
 
                 'device' => [
-                    'model'    => false,
-                    'brand'    => false,
-                    'type'     => false,
+                    'model' => false,
+                    'brand' => false,
+                    'type' => false,
                     'isMobile' => false,
-                    'isTouch'  => false,
+                    'isTouch' => false,
                 ],
 
                 'bot' => [
                     'isBot' => false,
-                    'name'  => false,
-                    'type'  => false,
+                    'name' => false,
+                    'type' => false,
                 ],
             ], $provider->getDetectionCapabilities());
         }
 
-        public function testIsRealResult()
+        public function test_is_real_result(): void
         {
-            $provider = new DonatjUAParser();
+            $provider = new DonatjUAParser;
 
             /*
              * general
@@ -120,37 +120,34 @@ namespace UserAgentParserTest\Unit\Provider
             $this->assertIsRealResult($provider, true, 'UNKNOWN something');
         }
 
-        /**
-         * @expectedException \UserAgentParser\Exception\NoResultFoundException
-         */
-        public function testParseNoResultFoundException()
+        public function test_parse_no_result_found_exception(): void
         {
+            $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
             self::$browser = null;
             self::$version = null;
 
-            $provider = new DonatjUAParser();
+            $provider = new DonatjUAParser;
 
             $reflection = new \ReflectionClass($provider);
-            $property   = $reflection->getProperty('functionName');
-            $property->setAccessible(true);
+            $property = $reflection->getProperty('functionName');
             $property->setValue($provider, '\UserAgentParser\Provider\parse_user_agent');
 
-            $result = $provider->parse('A real user agent...');
+            $provider->parse('A real user agent...');
         }
 
         /**
          * Provider name and version in result?
          */
-        public function testProviderNameAndVersionIsInResult()
+        public function test_provider_name_and_version_is_in_result(): void
         {
             self::$browser = 'Firefox';
             self::$version = '3.0.1';
 
-            $provider = new DonatjUAParser();
+            $provider = new DonatjUAParser;
 
             $reflection = new \ReflectionClass($provider);
-            $property   = $reflection->getProperty('functionName');
-            $property->setAccessible(true);
+            $property = $reflection->getProperty('functionName');
             $property->setValue($provider, '\UserAgentParser\Provider\parse_user_agent');
 
             $result = $provider->parse('A real user agent...');
@@ -160,22 +157,21 @@ namespace UserAgentParserTest\Unit\Provider
             self::$version = null;
 
             $this->assertEquals('DonatjUAParser', $result->getProviderName());
-            $this->assertRegExp('/\d{1,}\.\d{1,}/', $result->getProviderVersion());
+            $this->assertMatchesRegularExpression('/\d{1,}\.\d{1,}/', $result->getProviderVersion());
         }
 
         /**
          * Browser only
          */
-        public function testParseBrowser()
+        public function test_parse_browser(): void
         {
             self::$browser = 'Firefox';
             self::$version = '3.0.1';
 
-            $provider = new DonatjUAParser();
+            $provider = new DonatjUAParser;
 
             $reflection = new \ReflectionClass($provider);
-            $property   = $reflection->getProperty('functionName');
-            $property->setAccessible(true);
+            $property = $reflection->getProperty('functionName');
             $property->setValue($provider, '\UserAgentParser\Provider\parse_user_agent');
 
             $result = $provider->parse('A real user agent...');
@@ -186,7 +182,7 @@ namespace UserAgentParserTest\Unit\Provider
 
             $expectedResult = [
                 'browser' => [
-                    'name'    => 'Firefox',
+                    'name' => 'Firefox',
                     'version' => [
                         'major' => 3,
                         'minor' => 0,

@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider;
 
 use UAParser\Parser;
@@ -11,6 +12,7 @@ use UserAgentParser\Model;
  *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
+ *
  * @see https://github.com/ua-parser/uap-php
  */
 class UAParser extends AbstractProvider
@@ -39,32 +41,32 @@ class UAParser extends AbstractProvider
     protected $detectionCapabilities = [
 
         'browser' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'renderingEngine' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'operatingSystem' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'device' => [
-            'model'    => true,
-            'brand'    => true,
-            'type'     => false,
+            'model' => true,
+            'brand' => true,
+            'type' => false,
             'isMobile' => false,
-            'isTouch'  => false,
+            'isTouch' => false,
         ],
 
         'bot' => [
             'isBot' => true,
-            'name'  => true,
-            'type'  => false,
+            'name' => true,
+            'type' => false,
         ],
     ];
 
@@ -106,29 +108,23 @@ class UAParser extends AbstractProvider
         ],
     ];
 
-    private $parser;
+    private ?\UAParser\Parser $parser;
 
     /**
-     *
-     * @param  Parser                    $parser
      * @throws PackageNotLoadedException
      */
-    public function __construct(Parser $parser = null)
+    public function __construct(?Parser $parser = null)
     {
-        if ($parser === null) {
+        if (! $parser instanceof \UAParser\Parser) {
             $this->checkIfInstalled();
         }
 
         $this->parser = $parser;
     }
 
-    /**
-     *
-     * @return Parser
-     */
-    public function getParser()
+    public function getParser(): \UAParser\Parser
     {
-        if ($this->parser !== null) {
+        if ($this->parser instanceof \UAParser\Parser) {
             return $this->parser;
         }
 
@@ -138,14 +134,11 @@ class UAParser extends AbstractProvider
     }
 
     /**
-     *
-     * @param \UAParser\Result\Client $resultRaw
-     *
      * @return bool
      */
     private function hasResult(\UAParser\Result\Client $resultRaw)
     {
-        if ($this->isBot($resultRaw) === true) {
+        if ($this->isBot($resultRaw)) {
             return true;
         }
 
@@ -157,45 +150,21 @@ class UAParser extends AbstractProvider
             return true;
         }
 
-        if ($this->isRealResult($resultRaw->device->model, 'device', 'model')) {
-            return true;
-        }
-
-        return false;
+        return $this->isRealResult($resultRaw->device->model, 'device', 'model');
     }
 
-    /**
-     *
-     * @param \UAParser\Result\Client $resultRaw
-     *
-     * @return bool
-     */
-    private function isBot(\UAParser\Result\Client $resultRaw)
+    private function isBot(\UAParser\Result\Client $resultRaw): bool
     {
-        if ($resultRaw->device->family === 'Spider') {
-            return true;
-        }
-
-        return false;
+        return $resultRaw->device->family === 'Spider';
     }
 
-    /**
-     *
-     * @param Model\Bot               $bot
-     * @param \UAParser\Result\Client $resultRaw
-     */
-    private function hydrateBot(Model\Bot $bot, \UAParser\Result\Client $resultRaw)
+    private function hydrateBot(Model\Bot $bot, \UAParser\Result\Client $resultRaw): void
     {
         $bot->setIsBot(true);
         $bot->setName($this->getRealResult($resultRaw->ua->family, 'bot', 'name'));
     }
 
-    /**
-     *
-     * @param Model\Browser              $browser
-     * @param \UAParser\Result\UserAgent $uaRaw
-     */
-    private function hydrateBrowser(Model\Browser $browser, \UAParser\Result\UserAgent $uaRaw)
+    private function hydrateBrowser(Model\Browser $browser, \UAParser\Result\UserAgent $uaRaw): void
     {
         $browser->setName($this->getRealResult($uaRaw->family));
 
@@ -204,12 +173,7 @@ class UAParser extends AbstractProvider
         $browser->getVersion()->setPatch($this->getRealResult($uaRaw->patch));
     }
 
-    /**
-     *
-     * @param Model\OperatingSystem            $os
-     * @param \UAParser\Result\OperatingSystem $osRaw
-     */
-    private function hydrateOperatingSystem(Model\OperatingSystem $os, \UAParser\Result\OperatingSystem $osRaw)
+    private function hydrateOperatingSystem(Model\OperatingSystem $os, \UAParser\Result\OperatingSystem $osRaw): void
     {
         $os->setName($this->getRealResult($osRaw->family));
 
@@ -219,17 +183,15 @@ class UAParser extends AbstractProvider
     }
 
     /**
-     *
-     * @param Model\UserAgent         $device
-     * @param \UAParser\Result\Device $deviceRaw
+     * @param  Model\UserAgent  $device
      */
-    private function hydrateDevice(Model\Device $device, \UAParser\Result\Device $deviceRaw)
+    private function hydrateDevice(Model\Device $device, \UAParser\Result\Device $deviceRaw): void
     {
         $device->setModel($this->getRealResult($deviceRaw->model, 'device', 'model'));
         $device->setBrand($this->getRealResult($deviceRaw->brand, 'device', 'brand'));
     }
 
-    public function parse($userAgent, array $headers = [])
+    public function parse($userAgent, array $headers = []): \UserAgentParser\Model\UserAgent
     {
         $parser = $this->getParser();
 
@@ -240,7 +202,7 @@ class UAParser extends AbstractProvider
          * No result found?
          */
         if ($this->hasResult($resultRaw) !== true) {
-            throw new NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         /*
@@ -252,7 +214,7 @@ class UAParser extends AbstractProvider
         /*
          * Bot detection
          */
-        if ($this->isBot($resultRaw) === true) {
+        if ($this->isBot($resultRaw)) {
             $this->hydrateBot($result->getBot(), $resultRaw);
 
             return $result;

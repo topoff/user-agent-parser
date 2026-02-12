@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Model;
 
 /**
@@ -9,44 +10,15 @@ namespace UserAgentParser\Model;
  */
 class UserAgent
 {
-    /**
-     * Provider name
-     *
-     * @var string
-     */
-    private $providerName;
+    private Browser $browser;
 
-    /**
-     * Provider version
-     *
-     * @var string
-     */
-    private $providerVersion;
+    private RenderingEngine $renderingEngine;
 
-    /**
-     * @var Browser
-     */
-    private $browser;
+    private OperatingSystem $operatingSystem;
 
-    /**
-     * @var RenderingEngine
-     */
-    private $renderingEngine;
+    private Device $device;
 
-    /**
-     * @var OperatingSystem
-     */
-    private $operatingSystem;
-
-    /**
-     * @var Device
-     */
-    private $device;
-
-    /**
-     * @var Bot
-     */
-    private $bot;
+    private Bot $bot;
 
     /**
      * @var mixed
@@ -54,23 +26,26 @@ class UserAgent
     private $providerResultRaw;
 
     /**
-     *
-     * @param string $provider
+     * @param  string  $provider
+     * @param  string  $providerName
+     * @param  string  $providerVersion
      */
-    public function __construct($providerName = null, $providerVersion = null)
+    public function __construct(/**
+     * Provider name
+     */
+        private $providerName = null, /**
+     * Provider version
+     */
+        private $providerVersion = null)
     {
-        $this->providerName    = $providerName;
-        $this->providerVersion = $providerVersion;
-
-        $this->browser         = new Browser();
-        $this->renderingEngine = new RenderingEngine();
-        $this->operatingSystem = new OperatingSystem();
-        $this->device          = new Device();
-        $this->bot             = new Bot();
+        $this->browser = new Browser;
+        $this->renderingEngine = new RenderingEngine;
+        $this->operatingSystem = new OperatingSystem;
+        $this->device = new Device;
+        $this->bot = new Bot;
     }
 
     /**
-     *
      * @return string
      */
     public function getProviderName()
@@ -79,7 +54,6 @@ class UserAgent
     }
 
     /**
-     *
      * @return string
      */
     public function getProviderVersion()
@@ -87,116 +61,70 @@ class UserAgent
         return $this->providerVersion;
     }
 
-    /**
-     * @param Browser $browser
-     */
-    public function setBrowser(Browser $browser)
+    public function setBrowser(Browser $browser): void
     {
         $this->browser = $browser;
     }
 
-    /**
-     * @return Browser
-     */
-    public function getBrowser()
+    public function getBrowser(): Browser
     {
         return $this->browser;
     }
 
-    /**
-     * @param RenderingEngine $renderingEngine
-     */
-    public function setRenderingEngine(RenderingEngine $renderingEngine)
+    public function setRenderingEngine(RenderingEngine $renderingEngine): void
     {
         $this->renderingEngine = $renderingEngine;
     }
 
-    /**
-     * @return RenderingEngine
-     */
-    public function getRenderingEngine()
+    public function getRenderingEngine(): RenderingEngine
     {
         return $this->renderingEngine;
     }
 
-    /**
-     * @param OperatingSystem $operatingSystem
-     */
-    public function setOperatingSystem(OperatingSystem $operatingSystem)
+    public function setOperatingSystem(OperatingSystem $operatingSystem): void
     {
         $this->operatingSystem = $operatingSystem;
     }
 
-    /**
-     * @return OperatingSystem
-     */
-    public function getOperatingSystem()
+    public function getOperatingSystem(): OperatingSystem
     {
         return $this->operatingSystem;
     }
 
-    /**
-     * @param Device $device
-     */
-    public function setDevice(Device $device)
+    public function setDevice(Device $device): void
     {
         $this->device = $device;
     }
 
-    /**
-     * @return Device
-     */
-    public function getDevice()
+    public function getDevice(): Device
     {
         return $this->device;
     }
 
-    /**
-     * @param Bot $bot
-     */
-    public function setBot(Bot $bot)
+    public function setBot(Bot $bot): void
     {
         $this->bot = $bot;
     }
 
-    /**
-     * @return Bot
-     */
-    public function getBot()
+    public function getBot(): Bot
     {
         return $this->bot;
     }
 
-    /**
-     *
-     * @return boolean
-     */
-    public function isBot()
+    public function isBot(): bool
     {
-        if ($this->getBot()->getIsBot() === true) {
-            return true;
-        }
+        return $this->getBot()->getIsBot() === true;
+    }
 
-        return false;
+    public function isMobile(): bool
+    {
+        return $this->getDevice()->getIsMobile() === true;
     }
 
     /**
-     *
-     * @return boolean
+     * @param  mixed  $providerResultRaw
      */
-    public function isMobile()
-    {
-        if ($this->getDevice()->getIsMobile() === true) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param mixed $providerResultRaw
-     */
-    public function setProviderResultRaw($providerResultRaw)
+    public function setProviderResultRaw($providerResultRaw): void
     {
         $this->providerResultRaw = $providerResultRaw;
     }
@@ -209,17 +137,14 @@ class UserAgent
         return $this->providerResultRaw;
     }
 
-    /**
-     * @return array
-     */
-    public function toArray($includeResultRaw = false)
+    public function toArray($includeResultRaw = false): array
     {
         $data = [
-            'browser'          => $this->getBrowser()->toArray(),
-            'renderingEngine'  => $this->getRenderingEngine()->toArray(),
-            'operatingSystem'  => $this->getOperatingSystem()->toArray(),
-            'device'           => $this->getDevice()->toArray(),
-            'bot'              => $this->getBot()->toArray(),
+            'browser' => $this->getBrowser()->toArray(),
+            'renderingEngine' => $this->getRenderingEngine()->toArray(),
+            'operatingSystem' => $this->getOperatingSystem()->toArray(),
+            'device' => $this->getDevice()->toArray(),
+            'bot' => $this->getBot()->toArray(),
         ];
 
         // should be only used for debug

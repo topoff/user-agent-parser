@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider\Http;
 
 use GuzzleHttp\Psr7\Response;
@@ -8,8 +9,6 @@ use UserAgentParserTest\Unit\Provider\AbstractProviderTestCase;
 use UserAgentParserTest\Unit\Provider\RequiredProviderTestInterface;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -17,79 +16,79 @@ use UserAgentParserTest\Unit\Provider\RequiredProviderTestInterface;
  */
 class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderTestInterface
 {
-    public function testGetName()
+    public function test_get_name(): void
     {
         $provider = new UdgerCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals('UdgerCom', $provider->getName());
     }
 
-    public function testGetHomepage()
+    public function test_get_homepage(): void
     {
         $provider = new UdgerCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals('https://udger.com/', $provider->getHomepage());
     }
 
-    public function testGetPackageName()
+    public function test_get_package_name(): void
     {
         $provider = new UdgerCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getPackageName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
         $provider = new UdgerCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getVersion());
     }
 
-    public function testUpdateDate()
+    public function test_update_date(): void
     {
         $provider = new UdgerCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getUpdateDate());
     }
 
-    public function testDetectionCapabilities()
+    public function test_detection_capabilities(): void
     {
         $provider = new UdgerCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals([
 
             'browser' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'renderingEngine' => [
-                'name'    => true,
+                'name' => true,
                 'version' => false,
             ],
 
             'operatingSystem' => [
-                'name'    => true,
+                'name' => true,
                 'version' => false,
             ],
 
             'device' => [
-                'model'    => false,
-                'brand'    => false,
-                'type'     => true,
+                'model' => false,
+                'brand' => false,
+                'type' => true,
                 'isMobile' => false,
-                'isTouch'  => false,
+                'isTouch' => false,
             ],
 
             'bot' => [
                 'isBot' => true,
-                'name'  => false,
-                'type'  => false,
+                'name' => false,
+                'type' => false,
             ],
         ], $provider->getDetectionCapabilities());
     }
 
-    public function testIsRealResult()
+    public function test_is_real_result(): void
     {
         $provider = new UdgerCom($this->getClient(), 'apiKey123');
 
@@ -103,11 +102,11 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
     /**
      * Empty user agent
-     *
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
      */
-    public function testParseNoResultFoundExceptionEmptyUserAgent()
+    public function test_parse_no_result_found_exception_empty_user_agent(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $responseQueue = [
             new Response(200),
         ];
@@ -119,12 +118,12 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
     /**
      * 200 - flag 4
-     *
-     * @expectedException \UserAgentParser\Exception\InvalidCredentialsException
      */
-    public function testParseInvalidCredentialsException()
+    public function test_parse_invalid_credentials_exception(): void
     {
-        $rawResult       = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\InvalidCredentialsException::class);
+
+        $rawResult = new stdClass;
         $rawResult->flag = 4;
 
         $responseQueue = [
@@ -140,12 +139,12 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
     /**
      * 200 - flag 6
-     *
-     * @expectedException \UserAgentParser\Exception\LimitationExceededException
      */
-    public function testParseLimitationExceededException()
+    public function test_parse_limitation_exceeded_exception(): void
     {
-        $rawResult       = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\LimitationExceededException::class);
+
+        $rawResult = new stdClass;
         $rawResult->flag = 6;
 
         $responseQueue = [
@@ -161,12 +160,12 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
     /**
      * 200 - flag 99
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestException1()
+    public function test_parse_request_exception1(): void
     {
-        $rawResult       = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
+        $rawResult = new stdClass;
         $rawResult->flag = 99;
 
         $responseQueue = [
@@ -182,11 +181,11 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
     /**
      * 500
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestException2()
+    public function test_parse_request_exception2(): void
     {
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
         $responseQueue = [
             new Response(500),
         ];
@@ -198,11 +197,11 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
     /**
      * No JSON returned
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestExceptionContentType()
+    public function test_parse_request_exception_content_type(): void
     {
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
         $responseQueue = [
             new Response(200, [
                 'Content-Type' => 'text/html',
@@ -216,12 +215,12 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
     /**
      * No result found
-     *
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
      */
-    public function testParseNoResultFoundException()
+    public function test_parse_no_result_found_exception(): void
     {
-        $rawResult       = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $rawResult = new stdClass;
         $rawResult->flag = 3;
 
         $responseQueue = [
@@ -237,12 +236,12 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
     /**
      * Missing data
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestExceptionNoData()
+    public function test_parse_request_exception_no_data(): void
     {
-        $rawResult = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
+        $rawResult = new stdClass;
 
         $responseQueue = [
             new Response(200, [
@@ -258,13 +257,13 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
     /**
      * Provider name and version in result?
      */
-    public function testProviderNameAndVersionIsInResult()
+    public function test_provider_name_and_version_is_in_result(): void
     {
-        $info            = new stdClass();
-        $info->type      = 'Robot';
+        $info = new stdClass;
+        $info->type = 'Robot';
         $info->ua_family = 'Googlebot';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->info = $info;
 
         $responseQueue = [
@@ -284,13 +283,13 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
     /**
      * Bot
      */
-    public function testParseBot()
+    public function test_parse_bot(): void
     {
-        $info            = new stdClass();
-        $info->type      = 'Robot';
+        $info = new stdClass;
+        $info->type = 'Robot';
         $info->ua_family = 'Googlebot';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->info = $info;
 
         $responseQueue = [
@@ -306,8 +305,8 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Googlebot',
-                'type'  => null,
+                'name' => 'Googlebot',
+                'type' => null,
             ],
         ];
 
@@ -317,13 +316,13 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
     /**
      * Browser only
      */
-    public function testParseBrowser()
+    public function test_parse_browser(): void
     {
-        $info            = new stdClass();
+        $info = new stdClass;
         $info->ua_family = 'Firefox';
-        $info->ua_ver    = '3.0.1';
+        $info->ua_ver = '3.0.1';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->info = $info;
 
         $responseQueue = [
@@ -338,7 +337,7 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Firefox',
+                'name' => 'Firefox',
                 'version' => [
                     'major' => 3,
                     'minor' => 0,
@@ -357,12 +356,12 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
     /**
      * Rendering engine only
      */
-    public function testParseRenderingEngine()
+    public function test_parse_rendering_engine(): void
     {
-        $info            = new stdClass();
+        $info = new stdClass;
         $info->ua_engine = 'Webkit';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->info = $info;
 
         $responseQueue = [
@@ -377,7 +376,7 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
         $expectedResult = [
             'renderingEngine' => [
-                'name'    => 'Webkit',
+                'name' => 'Webkit',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -396,12 +395,12 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
     /**
      * OS only
      */
-    public function testParseOperatingSystem()
+    public function test_parse_operating_system(): void
     {
-        $info            = new stdClass();
+        $info = new stdClass;
         $info->os_family = 'Windows';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->info = $info;
 
         $responseQueue = [
@@ -416,7 +415,7 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
 
         $expectedResult = [
             'operatingSystem' => [
-                'name'    => 'Windows',
+                'name' => 'Windows',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -435,12 +434,12 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
     /**
      * Device only
      */
-    public function testParseDevice()
+    public function test_parse_device(): void
     {
-        $info              = new stdClass();
+        $info = new stdClass;
         $info->device_name = 'watch';
 
-        $rawResult       = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->info = $info;
 
         $responseQueue = [
@@ -457,10 +456,10 @@ class UdgerComTest extends AbstractProviderTestCase implements RequiredProviderT
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => 'watch',
+                'type' => 'watch',
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 

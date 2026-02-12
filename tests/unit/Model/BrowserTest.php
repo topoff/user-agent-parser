@@ -1,23 +1,22 @@
 <?php
+
 namespace UserAgentParserTest;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use UserAgentParser\Model\Browser;
 use UserAgentParser\Model\Version;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
  * @covers UserAgentParser\Model\Browser
  */
-class BrowserTest extends PHPUnit_Framework_TestCase
+class BrowserTest extends TestCase
 {
-    public function testName()
+    public function test_name(): void
     {
-        $browser = new Browser();
+        $browser = new Browser;
 
         $this->assertNull($browser->getName());
 
@@ -26,30 +25,30 @@ class BrowserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($name, $browser->getName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
-        $browser = new Browser();
+        $browser = new Browser;
 
-        $this->assertInstanceOf('UserAgentParser\Model\Version', $browser->getVersion());
+        $this->assertInstanceOf(\UserAgentParser\Model\Version::class, $browser->getVersion());
 
-        $version = new Version();
+        $version = new Version;
         $browser->setVersion($version);
         $this->assertSame($version, $browser->getVersion());
     }
 
-    public function testToArray()
+    public function test_to_array(): void
     {
-        $browser = new Browser();
+        $browser = new Browser;
 
         $this->assertEquals([
-            'name'    => null,
+            'name' => null,
             'version' => $browser->getVersion()
                 ->toArray(),
         ], $browser->toArray());
 
         $browser->setName('Chrome');
         $this->assertEquals([
-            'name'    => 'Chrome',
+            'name' => 'Chrome',
             'version' => $browser->getVersion()
                 ->toArray(),
         ], $browser->toArray());

@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParserTest\Integration\Provider\Http;
 
 use UserAgentParser\Provider\Http\UdgerCom;
@@ -8,22 +9,20 @@ use UserAgentParser\Provider\Http\UdgerCom;
  */
 class UdgerComTest extends AbstractHttpProviderTestCase
 {
-    /**
-     * @expectedException \UserAgentParser\Exception\InvalidCredentialsException
-     * @expectedExceptionMessage Your API key "invalid_api_key" is not valid for UdgerCom
-     */
-    public function testInvalidCredentials()
+    public function test_invalid_credentials(): void
     {
-        $provider = new UdgerCom($this->getClient(),  'invalid_api_key');
+        $this->expectException(\UserAgentParser\Exception\InvalidCredentialsException::class);
+        $this->expectExceptionMessage('Your API key "invalid_api_key" is not valid for UdgerCom');
 
-        $result = $provider->parse('...');
+        $provider = new UdgerCom($this->getClient(), 'invalid_api_key');
+
+        $provider->parse('...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFound()
+    public function test_no_result_found(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         if (! defined('CREDENTIALS_UDGER_COM_KEY')) {
             $this->markTestSkipped('no credentials available. Please provide tests/credentials.php');
         }
@@ -32,6 +31,6 @@ class UdgerComTest extends AbstractHttpProviderTestCase
 
         $provider = new UdgerCom($this->getClient(), CREDENTIALS_UDGER_COM_KEY);
 
-        $result = $provider->parse('...');
+        $provider->parse('...');
     }
 }

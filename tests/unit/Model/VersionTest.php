@@ -1,22 +1,21 @@
 <?php
+
 namespace UserAgentParserTest;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use UserAgentParser\Model\Version;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
  * @covers UserAgentParser\Model\Version
  */
-class VersionTest extends PHPUnit_Framework_TestCase
+class VersionTest extends TestCase
 {
-    public function testMajorMinorPatch()
+    public function test_major_minor_patch(): void
     {
-        $version = new Version();
+        $version = new Version;
 
         $this->assertNull($version->getMajor());
         $this->assertNull($version->getMinor());
@@ -36,9 +35,9 @@ class VersionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Windows XP', $version->getAlias());
     }
 
-    public function testCompleteSimple()
+    public function test_complete_simple(): void
     {
-        $version = new Version();
+        $version = new Version;
 
         $this->assertNull($version->getComplete());
 
@@ -62,9 +61,9 @@ class VersionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('3.0', $version->getComplete());
     }
 
-    public function testCompleteFilterZero()
+    public function test_complete_filter_zero(): void
     {
-        $version = new Version();
+        $version = new Version;
 
         // 0 gets filtered
         $version->setComplete('0');
@@ -79,9 +78,9 @@ class VersionTest extends PHPUnit_Framework_TestCase
         $this->assertNull($version->getComplete());
     }
 
-    public function testCompleteOnlyAlias()
+    public function test_complete_only_alias(): void
     {
-        $version = new Version();
+        $version = new Version;
 
         $version->setComplete('Windows XP');
 
@@ -92,9 +91,9 @@ class VersionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Windows XP', $version->getAlias());
     }
 
-    public function testCompleteVersionAndAlias()
+    public function test_complete_version_and_alias(): void
     {
-        $version = new Version();
+        $version = new Version;
 
         $version->setComplete('Windows XP 6.3');
 
@@ -105,9 +104,9 @@ class VersionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Windows XP', $version->getAlias());
     }
 
-    public function testCompleteWithNotAllowedBeta()
+    public function test_complete_with_not_allowed_beta(): void
     {
-        $version = new Version();
+        $version = new Version;
 
         $version->setComplete('5.6.3b');
 
@@ -118,9 +117,9 @@ class VersionTest extends PHPUnit_Framework_TestCase
         $this->assertNull($version->getAlias());
     }
 
-    public function testCompleteWithNotAllowedAlpha()
+    public function test_complete_with_not_allowed_alpha(): void
     {
-        $version = new Version();
+        $version = new Version;
 
         $version->setComplete('5.6.3alpha');
 
@@ -131,9 +130,9 @@ class VersionTest extends PHPUnit_Framework_TestCase
         $this->assertNull($version->getAlias());
     }
 
-    public function testCompleteWithUnderscore()
+    public function test_complete_with_underscore(): void
     {
-        $version = new Version();
+        $version = new Version;
 
         $version->setComplete('6_5_4');
 
@@ -144,9 +143,9 @@ class VersionTest extends PHPUnit_Framework_TestCase
         $this->assertNull($version->getAlias());
     }
 
-    public function testToArray()
+    public function test_to_array(): void
     {
-        $version = new Version();
+        $version = new Version;
 
         $this->assertEquals([
             'major' => null,

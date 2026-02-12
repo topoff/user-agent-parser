@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Exception;
 
 /**
@@ -7,6 +8,4 @@ namespace UserAgentParser\Exception;
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  */
-class PackageNotLoadedException extends \Exception implements ExceptionInterface
-{
-}
+class PackageNotLoadedException extends \Exception implements ExceptionInterface {}

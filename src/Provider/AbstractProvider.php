@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider;
 
 use Composer\InstalledVersions;
@@ -44,32 +45,32 @@ abstract class AbstractProvider
      */
     protected $allDetectionCapabilities = [
         'browser' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'renderingEngine' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'operatingSystem' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'device' => [
-            'model'    => false,
-            'brand'    => false,
-            'type'     => false,
+            'model' => false,
+            'brand' => false,
+            'type' => false,
             'isMobile' => false,
-            'isTouch'  => false,
+            'isTouch' => false,
         ],
 
         'bot' => [
             'isBot' => false,
-            'name'  => false,
-            'type'  => false,
+            'name' => false,
+            'type' => false,
         ],
     ];
 
@@ -123,7 +124,7 @@ abstract class AbstractProvider
     {
         try {
             return InstalledVersions::getVersion($this->getPackageName());
-        } catch (\OutOfBoundsException $ex) {
+        } catch (\OutOfBoundsException) {
             return;
         }
     }
@@ -133,10 +134,7 @@ abstract class AbstractProvider
      *
      * @return DateTime null
      */
-    public function getUpdateDate()
-    {
-        return;
-    }
+    public function getUpdateDate() {}
 
     /**
      * What kind of capabilities this provider can detect
@@ -149,22 +147,20 @@ abstract class AbstractProvider
     }
 
     /**
-     *
      * @throws PackageNotLoadedException
      */
     protected function checkIfInstalled()
     {
         if (! InstalledVersions::isInstalled($this->getPackageName())) {
-            throw new PackageNotLoadedException('You need to install the package ' . $this->getPackageName() . ' to use this provider');
+            throw new PackageNotLoadedException('You need to install the package '.$this->getPackageName().' to use this provider');
         }
     }
 
     /**
-     *
-     * @param  mixed   $value
+     * @param  mixed  $value
      * @param  string  $group
      * @param  string  $part
-     * @return boolean
+     * @return bool
      */
     protected function isRealResult($value, $group = null, $part = null)
     {
@@ -195,19 +191,15 @@ abstract class AbstractProvider
         if ($this->isRealResult($value, $group, $part) === true) {
             return $value;
         }
-
-        return;
     }
 
     /**
      * Parse the given user agent and return a result if possible
      *
-     * @param string $userAgent
-     * @param array  $headers
+     * @param  string  $userAgent
+     * @return Model\UserAgent
      *
      * @throws Exception\NoResultFoundException
-     *
-     * @return Model\UserAgent
      */
     abstract public function parse($userAgent, array $headers = []);
 }

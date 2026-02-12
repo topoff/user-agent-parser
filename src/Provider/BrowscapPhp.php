@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider;
 
 /**
@@ -6,6 +7,7 @@ namespace UserAgentParser\Provider;
  *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
+ *
  * @see https://github.com/browscap/browscap-php
  */
 class BrowscapPhp extends AbstractBrowscap
@@ -20,32 +22,32 @@ class BrowscapPhp extends AbstractBrowscap
     protected $detectionCapabilities = [
 
         'browser' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'renderingEngine' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'operatingSystem' => [
-            'name'    => true,
+            'name' => true,
             'version' => false,
         ],
 
         'device' => [
-            'model'    => false,
-            'brand'    => false,
-            'type'     => true,
+            'model' => false,
+            'brand' => false,
+            'type' => true,
             'isMobile' => true,
-            'isTouch'  => true,
+            'isTouch' => true,
         ],
 
         'bot' => [
             'isBot' => true,
-            'name'  => true,
-            'type'  => false,
+            'name' => true,
+            'type' => false,
         ],
     ];
 }

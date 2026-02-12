@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider\Http;
 
 use GuzzleHttp\Psr7\Response;
@@ -8,7 +9,6 @@ use UserAgentParserTest\Unit\Provider\AbstractProviderTestCase;
 use UserAgentParserTest\Unit\Provider\RequiredProviderTestInterface;
 
 /**
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -16,79 +16,79 @@ use UserAgentParserTest\Unit\Provider\RequiredProviderTestInterface;
  */
 class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements RequiredProviderTestInterface
 {
-    public function testGetName()
+    public function test_get_name(): void
     {
         $provider = new WhatIsMyBrowserCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals('WhatIsMyBrowserCom', $provider->getName());
     }
 
-    public function testGetHomepage()
+    public function test_get_homepage(): void
     {
         $provider = new WhatIsMyBrowserCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals('https://www.whatismybrowser.com/', $provider->getHomepage());
     }
 
-    public function testGetPackageName()
+    public function test_get_package_name(): void
     {
         $provider = new WhatIsMyBrowserCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getPackageName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
         $provider = new WhatIsMyBrowserCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getVersion());
     }
 
-    public function testUpdateDate()
+    public function test_update_date(): void
     {
         $provider = new WhatIsMyBrowserCom($this->getClient(), 'apiKey123');
 
         $this->assertNull($provider->getUpdateDate());
     }
 
-    public function testDetectionCapabilities()
+    public function test_detection_capabilities(): void
     {
         $provider = new WhatIsMyBrowserCom($this->getClient(), 'apiKey123');
 
         $this->assertEquals([
 
             'browser' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'renderingEngine' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'operatingSystem' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'device' => [
-                'model'    => true,
-                'brand'    => true,
-                'type'     => true,
+                'model' => true,
+                'brand' => true,
+                'type' => true,
                 'isMobile' => false,
-                'isTouch'  => false,
+                'isTouch' => false,
             ],
 
             'bot' => [
                 'isBot' => true,
-                'name'  => true,
-                'type'  => true,
+                'name' => true,
+                'type' => true,
             ],
         ], $provider->getDetectionCapabilities());
     }
 
-    public function testIsRealResult()
+    public function test_is_real_result(): void
     {
         $provider = new WhatIsMyBrowserCom($this->getClient(), 'apiKey123');
 
@@ -144,11 +144,11 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
     /**
      * Empty user agent
-     *
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
      */
-    public function testParseNoResultFoundExceptionEmptyUserAgent()
+    public function test_parse_no_result_found_exception_empty_user_agent(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $responseQueue = [
             new Response(200),
         ];
@@ -160,11 +160,11 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
     /**
      * No JSON returned
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestExceptionContentType()
+    public function test_parse_request_exception_content_type(): void
     {
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
         $responseQueue = [
             new Response(200, [
                 'Content-Type' => 'text/html',
@@ -176,12 +176,11 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
         $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundException()
+    public function test_parse_no_result_found_exception(): void
     {
-        $rawResult               = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $rawResult = new stdClass;
         $rawResult->message_code = 'no_user_agent';
 
         $responseQueue = [
@@ -192,17 +191,17 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
         $provider = new WhatIsMyBrowserCom($this->getClient($responseQueue), 'apiKey123');
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * usage_limit_exceeded
-     *
-     * @expectedException \UserAgentParser\Exception\LimitationExceededException
      */
-    public function testParseLimitationExceededException()
+    public function test_parse_limitation_exceeded_exception(): void
     {
-        $rawResult               = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\LimitationExceededException::class);
+
+        $rawResult = new stdClass;
         $rawResult->message_code = 'usage_limit_exceeded';
 
         $responseQueue = [
@@ -218,12 +217,12 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
     /**
      * no_api_user_key
-     *
-     * @expectedException \UserAgentParser\Exception\InvalidCredentialsException
      */
-    public function testParseInvalidCredentialsExceptionNoKey()
+    public function test_parse_invalid_credentials_exception_no_key(): void
     {
-        $rawResult               = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\InvalidCredentialsException::class);
+
+        $rawResult = new stdClass;
         $rawResult->message_code = 'no_api_user_key';
 
         $responseQueue = [
@@ -239,12 +238,12 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
     /**
      * user_key_invalid
-     *
-     * @expectedException \UserAgentParser\Exception\InvalidCredentialsException
      */
-    public function testParseInvalidCredentialsExceptionInvalidKey()
+    public function test_parse_invalid_credentials_exception_invalid_key(): void
     {
-        $rawResult               = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\InvalidCredentialsException::class);
+
+        $rawResult = new stdClass;
         $rawResult->message_code = 'user_key_invalid';
 
         $responseQueue = [
@@ -260,12 +259,12 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
     /**
      * unknown
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestExceptionUnknown()
+    public function test_parse_request_exception_unknown(): void
     {
-        $rawResult         = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
+        $rawResult = new stdClass;
         $rawResult->result = 'unknown';
 
         $responseQueue = [
@@ -281,12 +280,12 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
     /**
      * missing data
-     *
-     * @expectedException \UserAgentParser\Exception\RequestException
      */
-    public function testParseRequestExceptionMissingData()
+    public function test_parse_request_exception_missing_data(): void
     {
-        $rawResult         = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\RequestException::class);
+
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
 
         $responseQueue = [
@@ -300,14 +299,13 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
         $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFoundException()
+    public function test_no_result_found_exception(): void
     {
-        $rawResult         = new stdClass();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = new stdClass();
+        $rawResult->parse = new stdClass;
 
         $responseQueue = [
             new Response(200, [
@@ -320,18 +318,17 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
         $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFoundExceptionDefaultValue()
+    public function test_no_result_found_exception_default_value(): void
     {
-        $parseResult               = new stdClass();
-        $parseResult->user_agent   = 'A real user agent...';
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
         $parseResult->browser_name = 'Unknown browser';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -344,18 +341,17 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
         $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFoundExceptionDefaultValue2()
+    public function test_no_result_found_exception_default_value2(): void
     {
-        $parseResult                     = new stdClass();
-        $parseResult->user_agent         = 'A real user agent...';
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
         $parseResult->operating_platform = 'Mobile';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -371,17 +367,17 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
     /**
      * Provider name and version in result?
      */
-    public function testProviderNameAndVersionIsInResult()
+    public function test_provider_name_and_version_is_in_result(): void
     {
-        $parseResult                       = new stdClass();
-        $parseResult->user_agent           = 'A real user agent...';
-        $parseResult->software_type        = 'bot';
-        $parseResult->browser_name         = '360Spider';
-        $parseResult->software_sub_type    = 'crawler';
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
+        $parseResult->software_type = 'bot';
+        $parseResult->browser_name = '360Spider';
+        $parseResult->software_sub_type = 'crawler';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -400,17 +396,17 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
     /**
      * Bot
      */
-    public function testParseBot()
+    public function test_parse_bot(): void
     {
-        $parseResult                       = new stdClass();
-        $parseResult->user_agent           = 'A real user agent...';
-        $parseResult->software_type        = 'bot';
-        $parseResult->browser_name         = '360Spider';
-        $parseResult->software_sub_type    = 'crawler';
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
+        $parseResult->software_type = 'bot';
+        $parseResult->browser_name = '360Spider';
+        $parseResult->software_sub_type = 'crawler';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -425,8 +421,8 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => '360Spider',
-                'type'  => 'crawler',
+                'name' => '360Spider',
+                'type' => 'crawler',
             ],
         ];
 
@@ -436,16 +432,16 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
     /**
      * Browser only
      */
-    public function testParseBrowser()
+    public function test_parse_browser(): void
     {
-        $parseResult                       = new stdClass();
-        $parseResult->user_agent           = 'A real user agent...';
-        $parseResult->browser_name         = 'Firefox';
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
+        $parseResult->browser_name = 'Firefox';
         $parseResult->browser_version_full = '3.2.1';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -459,7 +455,7 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Firefox',
+                'name' => 'Firefox',
                 'version' => [
                     'major' => 3,
                     'minor' => 2,
@@ -478,16 +474,16 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
     /**
      * Browser only
      */
-    public function testParseBrowserDefaultValue()
+    public function test_parse_browser_default_value(): void
     {
-        $parseResult                     = new stdClass();
-        $parseResult->user_agent         = 'A real user agent...';
-        $parseResult->browser_name       = 'Unknown browser';
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
+        $parseResult->browser_name = 'Unknown browser';
         $parseResult->layout_engine_name = 'Webkit';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -501,7 +497,7 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
         $expectedResult = [
             'renderingEngine' => [
-                'name'    => 'Webkit',
+                'name' => 'Webkit',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -520,16 +516,16 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
     /**
      * Engine only
      */
-    public function testParseEngine()
+    public function test_parse_engine(): void
     {
-        $parseResult                        = new stdClass();
-        $parseResult->user_agent            = 'A real user agent...';
-        $parseResult->layout_engine_name    = 'Webkit';
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
+        $parseResult->layout_engine_name = 'Webkit';
         $parseResult->layout_engine_version = '3.2.1';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -543,7 +539,7 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
         $expectedResult = [
             'renderingEngine' => [
-                'name'    => 'Webkit',
+                'name' => 'Webkit',
                 'version' => [
                     'major' => 3,
                     'minor' => 2,
@@ -562,16 +558,16 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
     /**
      * OS only
      */
-    public function testParseOperatingSystem()
+    public function test_parse_operating_system(): void
     {
-        $parseResult                                = new stdClass();
-        $parseResult->user_agent                    = 'A real user agent...';
-        $parseResult->operating_system_name         = 'BlackBerryOS';
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
+        $parseResult->operating_system_name = 'BlackBerryOS';
         $parseResult->operating_system_version_full = '6.0.0';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -585,7 +581,7 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
 
         $expectedResult = [
             'operatingSystem' => [
-                'name'    => 'BlackBerryOS',
+                'name' => 'BlackBerryOS',
                 'version' => [
                     'major' => 6,
                     'minor' => 0,
@@ -604,15 +600,15 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
     /**
      * Device only
      */
-    public function testParseDeviceOnlyVendor()
+    public function test_parse_device_only_vendor(): void
     {
-        $parseResult                                 = new stdClass();
-        $parseResult->user_agent                     = 'A real user agent...';
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
         $parseResult->operating_platform_vendor_name = 'Dell';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -628,10 +624,10 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
             'device' => [
                 'model' => null,
                 'brand' => 'Dell',
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 
@@ -641,17 +637,17 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
     /**
      * Device only
      */
-    public function testParseDevice()
+    public function test_parse_device(): void
     {
-        $parseResult                                 = new stdClass();
-        $parseResult->user_agent                     = 'A real user agent...';
-        $parseResult->operating_platform             = 'Galaxy Note';
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
+        $parseResult->operating_platform = 'Galaxy Note';
         $parseResult->operating_platform_vendor_name = 'Dell';
-        $parseResult->hardware_type                  = 'mobile';
+        $parseResult->hardware_type = 'mobile';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -667,10 +663,10 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
             'device' => [
                 'model' => 'Galaxy Note',
                 'brand' => 'Dell',
-                'type'  => 'mobile',
+                'type' => 'mobile',
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 
@@ -680,16 +676,16 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
     /**
      * Device only
      */
-    public function testParseDeviceDefaultValue()
+    public function test_parse_device_default_value(): void
     {
-        $parseResult                                 = new stdClass();
-        $parseResult->user_agent                     = 'A real user agent...';
-        $parseResult->operating_platform             = 'Android Phone';
+        $parseResult = new stdClass;
+        $parseResult->user_agent = 'A real user agent...';
+        $parseResult->operating_platform = 'Android Phone';
         $parseResult->operating_platform_vendor_name = 'Dell';
 
-        $rawResult         = new stdClass();
+        $rawResult = new stdClass;
         $rawResult->result = 'success';
-        $rawResult->parse  = $parseResult;
+        $rawResult->parse = $parseResult;
 
         $responseQueue = [
             new Response(200, [
@@ -705,10 +701,10 @@ class WhatIsMyBrowserComTest extends AbstractProviderTestCase implements Require
             'device' => [
                 'model' => null,
                 'brand' => 'Dell',
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 

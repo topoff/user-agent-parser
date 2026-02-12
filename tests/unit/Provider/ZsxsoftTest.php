@@ -1,10 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider;
 
 use UserAgentParser\Provider\Zsxsoft;
 
 /**
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -12,111 +12,102 @@ use UserAgentParser\Provider\Zsxsoft;
  */
 class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTestInterface
 {
-    /**
-     *
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    private function getParser($returnValue = null)
+    private function getParser($returnValue = null): \PHPUnit\Framework\MockObject\MockObject
     {
-        $parser = $this->getMockBuilder('UserAgent');
-        $parser->disableOriginalConstructor()
+        $parser = $this->getMockBuilder('UserAgent')
+            ->disableOriginalConstructor()
             ->disableOriginalClone()
             ->disableArgumentCloning()
-            ->disallowMockingUnknownTypes()
-            ->setMethods([
-            'analyze',
-        ]);
-        $parser = $parser->getMock();
+            ->addMethods([
+                'analyze',
+            ])
+            ->getMock();
 
-        if ($returnValue === null) {
-            $parser->data = [
-                'browser'  => [],
-                'os'       => [],
-                'device'   => [],
-                'platform' => [],
-            ];
-        } else {
-            $parser->data = $returnValue;
-        }
+        $parser->data = $returnValue ?? [
+            'browser' => [],
+            'os' => [],
+            'device' => [],
+            'platform' => [],
+        ];
 
         return $parser;
     }
 
-    public function testGetName()
+    public function test_get_name(): void
     {
-        $provider = new Zsxsoft();
+        $provider = new Zsxsoft;
 
         $this->assertEquals('Zsxsoft', $provider->getName());
     }
 
-    public function testGetHomepage()
+    public function test_get_homepage(): void
     {
-        $provider = new Zsxsoft();
+        $provider = new Zsxsoft;
 
         $this->assertEquals('https://github.com/zsxsoft/php-useragent', $provider->getHomepage());
     }
 
-    public function testGetPackageName()
+    public function test_get_package_name(): void
     {
-        $provider = new Zsxsoft();
+        $provider = new Zsxsoft;
 
         $this->assertEquals('zsxsoft/php-useragent', $provider->getPackageName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
-        $provider = new Zsxsoft();
+        $provider = new Zsxsoft;
 
-        $this->assertInternalType('string', $provider->getVersion());
+        $this->assertIsString($provider->getVersion());
     }
 
-    public function testUpdateDate()
+    public function test_update_date(): void
     {
-        $provider = new Zsxsoft();
+        $provider = new Zsxsoft;
 
         $this->assertInstanceOf('DateTime', $provider->getUpdateDate());
     }
 
-    public function testDetectionCapabilities()
+    public function test_detection_capabilities(): void
     {
-        $provider = new Zsxsoft();
+        $provider = new Zsxsoft;
 
         $this->assertEquals([
 
             'browser' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'renderingEngine' => [
-                'name'    => false,
+                'name' => false,
                 'version' => false,
             ],
 
             'operatingSystem' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'device' => [
-                'model'    => true,
-                'brand'    => true,
-                'type'     => false,
+                'model' => true,
+                'brand' => true,
+                'type' => false,
                 'isMobile' => false,
-                'isTouch'  => false,
+                'isTouch' => false,
             ],
 
             'bot' => [
                 'isBot' => false,
-                'name'  => false,
-                'type'  => false,
+                'name' => false,
+                'type' => false,
             ],
         ], $provider->getDetectionCapabilities());
     }
 
-    public function testIsRealResult()
+    public function test_is_real_result(): void
     {
-        $provider = new Zsxsoft();
+        $provider = new Zsxsoft;
 
         $this->assertIsRealResult($provider, false, 'unknown');
         $this->assertIsRealResult($provider, false, 'UnKnown');
@@ -132,9 +123,9 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
         $this->assertIsRealResult($provider, true, 'Android model name', 'device', 'model');
     }
 
-    public function testParser()
+    public function test_parser(): void
     {
-        $provider = new Zsxsoft();
+        $provider = new Zsxsoft;
         $this->assertInstanceOf('UserAgent', $provider->getParser());
 
         $parser = $this->getParser();
@@ -144,45 +135,42 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
         $this->assertSame($parser, $provider->getParser());
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundException()
+    public function test_parse_no_result_found_exception(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $provider = new Zsxsoft($this->getParser());
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundExceptionDefaultBrowserName()
+    public function test_parse_no_result_found_exception_default_browser_name(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $result = [
             'browser' => [
-                'name'    => 'Mozilla Compatible',
+                'name' => 'Mozilla Compatible',
                 'version' => '3.2.1',
             ],
-            'os'       => [],
-            'device'   => [],
+            'os' => [],
+            'device' => [],
             'platform' => [],
         ];
 
         $provider = new Zsxsoft($this->getParser($result));
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundExceptionDefaultDeviceModel()
+    public function test_parse_no_result_found_exception_default_device_model(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $result = [
             'browser' => [],
-            'os'      => [],
-            'device'  => [
+            'os' => [],
+            'device' => [
                 'model' => 'Android',
             ],
             'platform' => [],
@@ -190,21 +178,21 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
 
         $provider = new Zsxsoft($this->getParser($result));
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * Provider name and version in result?
      */
-    public function testProviderNameAndVersionIsInResult()
+    public function test_provider_name_and_version_is_in_result(): void
     {
         $result = [
             'browser' => [
-                'name'    => 'Firefox',
+                'name' => 'Firefox',
                 'version' => '3.2.1',
             ],
-            'os'       => [],
-            'device'   => [],
+            'os' => [],
+            'device' => [],
             'platform' => [],
         ];
 
@@ -213,21 +201,21 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
         $result = $provider->parse('A real user agent...');
 
         $this->assertEquals('Zsxsoft', $result->getProviderName());
-        $this->assertRegExp('/\d{1,}\.\d{1,}/', $result->getProviderVersion());
+        $this->assertMatchesRegularExpression('/\d{1,}\.\d{1,}/', $result->getProviderVersion());
     }
 
     /**
      * Browser only
      */
-    public function testParseBrowser()
+    public function test_parse_browser(): void
     {
         $result = [
             'browser' => [
-                'name'    => 'Firefox',
+                'name' => 'Firefox',
                 'version' => '3.2.1',
             ],
-            'os'       => [],
-            'device'   => [],
+            'os' => [],
+            'device' => [],
             'platform' => [],
         ];
 
@@ -237,7 +225,7 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Firefox',
+                'name' => 'Firefox',
                 'version' => [
                     'major' => 3,
                     'minor' => 2,
@@ -256,15 +244,15 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
     /**
      * OS only
      */
-    public function testParseOperatingSystem()
+    public function test_parse_operating_system(): void
     {
         $result = [
             'browser' => [],
-            'os'      => [
-                'name'    => 'Windows',
+            'os' => [
+                'name' => 'Windows',
                 'version' => '7.0.1',
             ],
-            'device'   => [],
+            'device' => [],
             'platform' => [],
         ];
 
@@ -274,7 +262,7 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
 
         $expectedResult = [
             'operatingSystem' => [
-                'name'    => 'Windows',
+                'name' => 'Windows',
                 'version' => [
                     'major' => 7,
                     'minor' => 0,
@@ -293,12 +281,12 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
     /**
      * Device only
      */
-    public function testParseDevice()
+    public function test_parse_device(): void
     {
         $result = [
             'browser' => [],
-            'os'      => [],
-            'device'  => [
+            'os' => [],
+            'device' => [
                 'model' => 'iPhone',
                 'brand' => 'Apple',
             ],
@@ -313,10 +301,10 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
             'device' => [
                 'model' => 'iPhone',
                 'brand' => 'Apple',
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 
@@ -326,12 +314,12 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
     /**
      * Device model only
      */
-    public function testParseDeviceModelOnly()
+    public function test_parse_device_model_only(): void
     {
         $result = [
             'browser' => [],
-            'os'      => [],
-            'device'  => [
+            'os' => [],
+            'device' => [
                 'model' => 'One+',
             ],
             'platform' => [],
@@ -345,10 +333,10 @@ class ZsxsoftTest extends AbstractProviderTestCase implements RequiredProviderTe
             'device' => [
                 'model' => 'One+',
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 

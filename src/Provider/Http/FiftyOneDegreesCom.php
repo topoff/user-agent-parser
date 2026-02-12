@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider\Http;
 
 use GuzzleHttp\Client;
@@ -12,6 +13,7 @@ use UserAgentParser\Model;
  *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
+ *
  * @see https://51degrees.com
  */
 class FiftyOneDegreesCom extends AbstractHttpProvider
@@ -33,32 +35,32 @@ class FiftyOneDegreesCom extends AbstractHttpProvider
     protected $detectionCapabilities = [
 
         'browser' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'renderingEngine' => [
-            'name'    => true,
+            'name' => true,
             'version' => false,
         ],
 
         'operatingSystem' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'device' => [
-            'model'    => true,
-            'brand'    => true,
-            'type'     => true,
+            'model' => true,
+            'brand' => true,
+            'type' => true,
             'isMobile' => true,
-            'isTouch'  => false,
+            'isTouch' => false,
         ],
 
         'bot' => [
             'isBot' => true,
-            'name'  => false,
-            'type'  => false,
+            'name' => false,
+            'type' => false,
         ],
     ];
 
@@ -68,46 +70,38 @@ class FiftyOneDegreesCom extends AbstractHttpProvider
         ],
     ];
 
-    private static $uri = 'https://cloud.51degrees.com/api/v1';
+    private static string $uri = 'https://cloud.51degrees.com/api/v1';
 
-    private $apiKey;
-
-    public function __construct(Client $client, $apiKey)
+    public function __construct(Client $client, private $apiKey)
     {
         parent::__construct($client);
-
-        $this->apiKey = $apiKey;
     }
 
     /**
-     *
-     * @param  string                     $userAgent
-     * @param  array                      $headers
-     * @return stdClass
      * @throws Exception\RequestException
      */
-    protected function getResult($userAgent, array $headers)
+    protected function getResult(?string $userAgent, array $headers): \stdClass
     {
         /*
          * an empty UserAgent makes no sense
          */
         if ($userAgent == '') {
-            throw new Exception\NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new Exception\NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         $headers['User-Agent'] = $userAgent;
 
-        $parameters = '/' . $this->apiKey;
+        $parameters = '/'.$this->apiKey;
         $parameters .= '/match?';
 
         $headerString = [];
         foreach ($headers as $key => $value) {
-            $headerString[] = $key . '=' . rawurlencode($value);
+            $headerString[] = $key.'='.rawurlencode((string) $value);
         }
 
         $parameters .= implode('&', $headerString);
 
-        $uri = self::$uri . $parameters;
+        $uri = self::$uri.$parameters;
 
         $request = new Request('GET', $uri);
 
@@ -118,7 +112,7 @@ class FiftyOneDegreesCom extends AbstractHttpProvider
             $prevEx = $ex->getPrevious();
 
             if ($prevEx->hasResponse() === true && $prevEx->getResponse()->getStatusCode() === 403) {
-                throw new Exception\InvalidCredentialsException('Your API key "' . $this->apiKey . '" is not valid for ' . $this->getName(), null, $ex);
+                throw new Exception\InvalidCredentialsException('Your API key "'.$this->apiKey.'" is not valid for '.$this->getName(), null, $ex);
             }
 
             throw $ex;
@@ -129,7 +123,7 @@ class FiftyOneDegreesCom extends AbstractHttpProvider
          */
         $contentType = $response->getHeader('Content-Type');
         if (! isset($contentType[0]) || $contentType[0] != 'application/json; charset=utf-8') {
-            throw new Exception\RequestException('Could not get valid "application/json; charset=utf-8" response from "' . $request->getUri() . '". Response is "' . $response->getBody()->getContents() . '"');
+            throw new Exception\RequestException('Could not get valid "application/json; charset=utf-8" response from "'.$request->getUri().'". Response is "'.$response->getBody()->getContents().'"');
         }
 
         $content = json_decode($response->getBody()->getContents());
@@ -138,20 +132,20 @@ class FiftyOneDegreesCom extends AbstractHttpProvider
          * No result
          */
         if (isset($content->MatchMethod) && $content->MatchMethod == 'None') {
-            throw new Exception\NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new Exception\NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         /*
          * Missing data?
          */
         if (! $content instanceof stdClass || ! isset($content->Values)) {
-            throw new Exception\RequestException('Could not get valid response from "' . $request->getUri() . '". Data is missing "' . $response->getBody()->getContents() . '"');
+            throw new Exception\RequestException('Could not get valid response from "'.$request->getUri().'". Data is missing "'.$response->getBody()->getContents().'"');
         }
 
         /*
          * Convert the values, to something useable
          */
-        $values              = new \stdClass();
+        $values = new \stdClass;
         $values->MatchMethod = $content->MatchMethod;
 
         foreach ($content->Values as $key => $value) {
@@ -171,22 +165,12 @@ class FiftyOneDegreesCom extends AbstractHttpProvider
         return $values;
     }
 
-    /**
-     *
-     * @param Model\Bot $bot
-     * @param stdClass  $resultRaw
-     */
-    private function hydrateBot(Model\Bot $bot, stdClass $resultRaw)
+    private function hydrateBot(Model\Bot $bot): void
     {
         $bot->setIsBot(true);
     }
 
-    /**
-     *
-     * @param Model\Browser $browser
-     * @param stdClass      $resultRaw
-     */
-    private function hydrateBrowser(Model\Browser $browser, stdClass $resultRaw)
+    private function hydrateBrowser(Model\Browser $browser, stdClass $resultRaw): void
     {
         if (isset($resultRaw->BrowserName)) {
             $browser->setName($this->getRealResult($resultRaw->BrowserName));
@@ -197,24 +181,14 @@ class FiftyOneDegreesCom extends AbstractHttpProvider
         }
     }
 
-    /**
-     *
-     * @param Model\RenderingEngine $engine
-     * @param stdClass              $resultRaw
-     */
-    private function hydrateRenderingEngine(Model\RenderingEngine $engine, stdClass $resultRaw)
+    private function hydrateRenderingEngine(Model\RenderingEngine $engine, stdClass $resultRaw): void
     {
         if (isset($resultRaw->LayoutEngine)) {
             $engine->setName($this->getRealResult($resultRaw->LayoutEngine));
         }
     }
 
-    /**
-     *
-     * @param Model\OperatingSystem $os
-     * @param stdClass              $resultRaw
-     */
-    private function hydrateOperatingSystem(Model\OperatingSystem $os, stdClass $resultRaw)
+    private function hydrateOperatingSystem(Model\OperatingSystem $os, stdClass $resultRaw): void
     {
         if (isset($resultRaw->PlatformName)) {
             $os->setName($this->getRealResult($resultRaw->PlatformName));
@@ -225,12 +199,7 @@ class FiftyOneDegreesCom extends AbstractHttpProvider
         }
     }
 
-    /**
-     *
-     * @param Model\Device $device
-     * @param stdClass     $resultRaw
-     */
-    private function hydrateDevice(Model\Device $device, stdClass $resultRaw)
+    private function hydrateDevice(Model\Device $device, stdClass $resultRaw): void
     {
         if (isset($resultRaw->HardwareVendor)) {
             $device->setBrand($this->getRealResult($resultRaw->HardwareVendor));
@@ -246,7 +215,7 @@ class FiftyOneDegreesCom extends AbstractHttpProvider
         }
     }
 
-    public function parse($userAgent, array $headers = [])
+    public function parse($userAgent, array $headers = []): \UserAgentParser\Model\UserAgent
     {
         $resultRaw = $this->getResult($userAgent, $headers);
 
@@ -260,7 +229,7 @@ class FiftyOneDegreesCom extends AbstractHttpProvider
          * Bot detection
          */
         if (isset($resultRaw->IsCrawler) && $resultRaw->IsCrawler === true) {
-            $this->hydrateBot($result->getBot(), $resultRaw);
+            $this->hydrateBot($result->getBot());
 
             return $result;
         }

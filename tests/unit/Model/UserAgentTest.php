@@ -1,79 +1,76 @@
 <?php
+
 namespace UserAgentParserTest;
 
-use PHPUnit_Framework_TestCase;
-use UserAgentParser\Model\Browser;
-use UserAgentParser\Model\OperatingSystem;
+use PHPUnit\Framework\TestCase;
 use UserAgentParser\Model\UserAgent;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
  * @covers UserAgentParser\Model\UserAgent
  */
-class UserAgentTest extends PHPUnit_Framework_TestCase
+class UserAgentTest extends TestCase
 {
-    public function testBrowser()
+    public function test_browser(): void
     {
-        $ua = new UserAgent();
+        $ua = new UserAgent;
 
-        $this->assertInstanceOf('UserAgentParser\Model\Browser', $ua->getBrowser());
+        $this->assertInstanceOf(\UserAgentParser\Model\Browser::class, $ua->getBrowser());
 
-        $mock = self::createMock('UserAgentParser\Model\Browser');
+        $mock = self::createMock(\UserAgentParser\Model\Browser::class);
         $ua->setBrowser($mock);
         $this->assertSame($mock, $ua->getBrowser());
     }
 
-    public function testRenderingEngine()
+    public function test_rendering_engine(): void
     {
-        $ua = new UserAgent();
+        $ua = new UserAgent;
 
-        $this->assertInstanceOf('UserAgentParser\Model\RenderingEngine', $ua->getRenderingEngine());
+        $this->assertInstanceOf(\UserAgentParser\Model\RenderingEngine::class, $ua->getRenderingEngine());
 
-        $mock = self::createMock('UserAgentParser\Model\RenderingEngine');
+        $mock = self::createMock(\UserAgentParser\Model\RenderingEngine::class);
         $ua->setRenderingEngine($mock);
         $this->assertSame($mock, $ua->getRenderingEngine());
     }
 
-    public function testOperatingSystem()
+    public function test_operating_system(): void
     {
-        $ua = new UserAgent();
+        $ua = new UserAgent;
 
-        $this->assertInstanceOf('UserAgentParser\Model\OperatingSystem', $ua->getOperatingSystem());
+        $this->assertInstanceOf(\UserAgentParser\Model\OperatingSystem::class, $ua->getOperatingSystem());
 
-        $mock = self::createMock('UserAgentParser\Model\OperatingSystem');
+        $mock = self::createMock(\UserAgentParser\Model\OperatingSystem::class);
         $ua->setOperatingSystem($mock);
         $this->assertSame($mock, $ua->getOperatingSystem());
     }
 
-    public function testDevice()
+    public function test_device(): void
     {
-        $ua = new UserAgent();
+        $ua = new UserAgent;
 
-        $this->assertInstanceOf('UserAgentParser\Model\Device', $ua->getDevice());
+        $this->assertInstanceOf(\UserAgentParser\Model\Device::class, $ua->getDevice());
 
-        $mock = self::createMock('UserAgentParser\Model\Device');
+        $mock = self::createMock(\UserAgentParser\Model\Device::class);
         $ua->setDevice($mock);
         $this->assertSame($mock, $ua->getDevice());
     }
 
-    public function testBot()
+    public function test_bot(): void
     {
-        $ua = new UserAgent();
+        $ua = new UserAgent;
 
-        $this->assertInstanceOf('UserAgentParser\Model\Bot', $ua->getBot());
+        $this->assertInstanceOf(\UserAgentParser\Model\Bot::class, $ua->getBot());
 
-        $mock = self::createMock('UserAgentParser\Model\Bot');
+        $mock = self::createMock(\UserAgentParser\Model\Bot::class);
         $ua->setBot($mock);
         $this->assertSame($mock, $ua->getBot());
     }
 
-    public function testIsBot()
+    public function test_is_bot(): void
     {
-        $ua = new UserAgent();
+        $ua = new UserAgent;
 
         $this->assertFalse($ua->isBot());
 
@@ -84,9 +81,9 @@ class UserAgentTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($ua->isBot());
     }
 
-    public function testIsMobile()
+    public function test_is_mobile(): void
     {
-        $ua = new UserAgent();
+        $ua = new UserAgent;
 
         $this->assertFalse($ua->isMobile());
 
@@ -97,9 +94,9 @@ class UserAgentTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($ua->isMobile());
     }
 
-    public function testProviderResultRaw()
+    public function test_provider_result_raw(): void
     {
-        $ua = new UserAgent();
+        $ua = new UserAgent;
 
         $this->assertNull($ua->getProviderResultRaw());
 
@@ -107,24 +104,24 @@ class UserAgentTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(['test'], $ua->getProviderResultRaw());
     }
 
-    public function testToArray()
+    public function test_to_array(): void
     {
-        $ua = new UserAgent();
+        $ua = new UserAgent;
 
         $this->assertEquals([
-            'browser'          => $ua->getBrowser()->toArray(),
-            'renderingEngine'  => $ua->getRenderingEngine()->toArray(),
-            'operatingSystem'  => $ua->getOperatingSystem()->toArray(),
-            'device'           => $ua->getDevice()->toArray(),
-            'bot'              => $ua->getBot()->toArray(),
+            'browser' => $ua->getBrowser()->toArray(),
+            'renderingEngine' => $ua->getRenderingEngine()->toArray(),
+            'operatingSystem' => $ua->getOperatingSystem()->toArray(),
+            'device' => $ua->getDevice()->toArray(),
+            'bot' => $ua->getBot()->toArray(),
         ], $ua->toArray());
 
         $this->assertEquals([
-            'browser'           => $ua->getBrowser()->toArray(),
-            'renderingEngine'   => $ua->getRenderingEngine()->toArray(),
-            'operatingSystem'   => $ua->getOperatingSystem()->toArray(),
-            'device'            => $ua->getDevice()->toArray(),
-            'bot'               => $ua->getBot()->toArray(),
+            'browser' => $ua->getBrowser()->toArray(),
+            'renderingEngine' => $ua->getRenderingEngine()->toArray(),
+            'operatingSystem' => $ua->getOperatingSystem()->toArray(),
+            'device' => $ua->getDevice()->toArray(),
+            'bot' => $ua->getBot()->toArray(),
             'providerResultRaw' => null,
         ], $ua->toArray(true));
     }

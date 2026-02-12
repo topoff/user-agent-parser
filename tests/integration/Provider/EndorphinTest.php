@@ -1,10 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Integration\Provider;
 
 use UserAgentParser\Provider\Endorphin;
 
 /**
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -12,24 +12,23 @@ use UserAgentParser\Provider\Endorphin;
  */
 class EndorphinTest extends AbstractProviderTestCase
 {
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFound()
+    public function test_no_result_found(): void
     {
-        $provider = new Endorphin();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
 
-        $result = $provider->parse('...');
+        $provider = new Endorphin;
+
+        $provider->parse('...');
     }
 
-    public function testRealResultBot()
+    public function test_real_result_bot(): void
     {
-        $provider = new Endorphin();
+        $provider = new Endorphin;
 
         $result = $provider->parse('Googlebot/2.1 (+http://www.googlebot.com/bot.html)');
         $this->assertEquals([
             'browser' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -41,7 +40,7 @@ class EndorphinTest extends AbstractProviderTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -53,7 +52,7 @@ class EndorphinTest extends AbstractProviderTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -67,15 +66,15 @@ class EndorphinTest extends AbstractProviderTestCase
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Google (Search)',
-                'type'  => 'Search Engine',
+                'name' => 'Google (Search)',
+                'type' => 'Search Engine',
             ],
         ], $result->toArray());
 
@@ -92,14 +91,14 @@ class EndorphinTest extends AbstractProviderTestCase
         $this->assertInstanceOf('EndorphinStudio\Detector\Robot', $rawResult->Robot);
     }
 
-    public function testRealResultDevice()
+    public function test_real_result_device(): void
     {
-        $provider = new Endorphin();
+        $provider = new Endorphin;
 
         $result = $provider->parse('Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3');
         $this->assertEquals([
             'browser' => [
-                'name'    => 'Safari',
+                'name' => 'Safari',
                 'version' => [
                     'major' => 7534,
                     'minor' => 48,
@@ -111,7 +110,7 @@ class EndorphinTest extends AbstractProviderTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -123,7 +122,7 @@ class EndorphinTest extends AbstractProviderTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => 'Mac OS X',
+                'name' => 'Mac OS X',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -137,15 +136,15 @@ class EndorphinTest extends AbstractProviderTestCase
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => 'mobile',
+                'type' => 'mobile',
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => null,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ], $result->toArray());
     }

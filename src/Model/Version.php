@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Model;
 
 /**
@@ -9,37 +10,23 @@ namespace UserAgentParser\Model;
  */
 class Version
 {
-    /**
-     *
-     * @var integer
-     */
-    private $major;
+    private ?int $major = null;
+
+    private ?int $minor = null;
+
+    private ?int $patch = null;
 
     /**
-     *
-     * @var integer
-     */
-    private $minor;
-
-    /**
-     *
-     * @var integer
-     */
-    private $patch;
-
-    /**
-     *
      * @var string
      */
     private $alias;
 
     /**
-     *
      * @var string
      */
     private $complete;
 
-    private static $notAllowedAlias = [
+    private static array $notAllowedAlias = [
         'a',
         'alpha',
         'prealpha',
@@ -52,10 +39,9 @@ class Version
     ];
 
     /**
-     *
-     * @param integer $major
+     * @param  int  $major
      */
-    public function setMajor($major)
+    public function setMajor($major): void
     {
         if ($major !== null) {
             $major = (int) $major;
@@ -66,20 +52,15 @@ class Version
         $this->hydrateComplete();
     }
 
-    /**
-     *
-     * @return integer
-     */
-    public function getMajor()
+    public function getMajor(): ?int
     {
         return $this->major;
     }
 
     /**
-     *
-     * @param integer $minor
+     * @param  int  $minor
      */
-    public function setMinor($minor)
+    public function setMinor($minor): void
     {
         if ($minor !== null) {
             $minor = (int) $minor;
@@ -90,20 +71,15 @@ class Version
         $this->hydrateComplete();
     }
 
-    /**
-     *
-     * @return integer
-     */
-    public function getMinor()
+    public function getMinor(): ?int
     {
         return $this->minor;
     }
 
     /**
-     *
-     * @param integer $patch
+     * @param  int  $patch
      */
-    public function setPatch($patch)
+    public function setPatch($patch): void
     {
         if ($patch !== null) {
             $patch = (int) $patch;
@@ -114,20 +90,15 @@ class Version
         $this->hydrateComplete();
     }
 
-    /**
-     *
-     * @return integer
-     */
-    public function getPatch()
+    public function getPatch(): ?int
     {
         return $this->patch;
     }
 
     /**
-     *
-     * @param string $alias
+     * @param  string  $alias
      */
-    public function setAlias($alias)
+    public function setAlias($alias): void
     {
         $this->alias = $alias;
 
@@ -135,7 +106,6 @@ class Version
     }
 
     /**
-     *
      * @return string
      */
     public function getAlias()
@@ -146,9 +116,9 @@ class Version
     /**
      * Set from the complete version string.
      *
-     * @param string $complete
+     * @param  string  $complete
      */
-    public function setComplete($complete)
+    public function setComplete($complete): void
     {
         // check if the version has only 0 -> so no real result
         // maybe move this out to the Providers itself?
@@ -163,7 +133,6 @@ class Version
     }
 
     /**
-     *
      * @return string
      */
     public function getComplete()
@@ -171,11 +140,7 @@ class Version
         return $this->complete;
     }
 
-    /**
-     *
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'major' => $this->getMajor(),
@@ -188,11 +153,7 @@ class Version
         ];
     }
 
-    /**
-     *
-     * @return string
-     */
-    private function hydrateComplete()
+    private function hydrateComplete(): void
     {
         if ($this->getMajor() === null && $this->getAlias() === null) {
             return;
@@ -201,21 +162,21 @@ class Version
         $version = $this->getMajor();
 
         if ($this->getMinor() !== null) {
-            $version .= '.' . $this->getMinor();
+            $version .= '.'.$this->getMinor();
         }
 
         if ($this->getPatch() !== null) {
-            $version .= '.' . $this->getPatch();
+            $version .= '.'.$this->getPatch();
         }
 
         if ($this->getAlias() !== null) {
-            $version = $this->getAlias() . ' - ' . $version;
+            $version = $this->getAlias().' - '.$version;
         }
 
         $this->complete = $version;
     }
 
-    private function hydrateFromComplete($complete)
+    private function hydrateFromComplete($complete): void
     {
         $parts = $this->getCompleteParts($complete);
 
@@ -225,11 +186,7 @@ class Version
         $this->setAlias($parts['alias']);
     }
 
-    /**
-     *
-     * @return array
-     */
-    private function getCompleteParts($complete)
+    private function getCompleteParts($complete): array
     {
         $versionParts = [
             'major' => null,
@@ -240,9 +197,9 @@ class Version
         ];
 
         // only digits
-        preg_match("/\d+(?:[._]*\d*)*/", $complete, $result);
+        preg_match("/\d+(?:[._]*\d*)*/", (string) $complete, $result);
         if (count($result) > 0) {
-            $parts = preg_split("/[._]/", $result[0]);
+            $parts = preg_split('/[._]/', $result[0]);
 
             if (isset($parts[0]) && $parts[0] != '') {
                 $versionParts['major'] = (int) $parts[0];
@@ -256,7 +213,7 @@ class Version
         }
 
         // grab alias
-        $result = preg_split("/\d+(?:[._]*\d*)*/", $complete);
+        $result = preg_split("/\d+(?:[._]*\d*)*/", (string) $complete);
         foreach ($result as $row) {
             $row = trim($row);
 

@@ -16,34 +16,34 @@
 
     "autoload": {
         "psr-4": {
-            "UserAgentParser\\":  "src"
+            "UserAgentParser\\": "src"
         }
     },
 
     "autoload-dev": {
         "psr-4": {
-            "UserAgentParserTest\\Unit\\":  "tests/unit",
-            "UserAgentParserTest\\Integration\\":  "tests/integration"
+            "UserAgentParserTest\\Unit\\": "tests/unit",
+            "UserAgentParserTest\\Integration\\": "tests/integration"
         }
     },
 
     "require": {
-        "php": "^7.4|^8.0",
-        "guzzlehttp/guzzle": "^6.1||^7.0",
-        "composer-runtime-api": "^2.0"
+        "php": "^8.3",
+        "composer-runtime-api": "^2.0",
+        "guzzlehttp/guzzle": "^6.1||^7.0"
     },
 
     "conflict": {
-        "browscap/browscap-php": "<3,>=6",
+        "browscap/browscap-php": "<3,>=8",
         "donatj/phpuseragentparser": "<1,>=2",
         "jenssegers/agent": "<2.6,>=3",
-        "mobiledetect/mobiledetectlib": "<2.7.5,>=3",
         "matomo/device-detector": "<5,>=6",
+        "mobiledetect/mobiledetectlib": "<2.7.5,>=3",
+        "mimmi20/wurfl": "<1.6.4,>=2",
         "sinergi/browser-detector": "<6,>=7",
         "ua-parser/uap-php": "<3.4.3,>=4",
         "whichbrowser/parser": "<2.0.10,>=3",
         "woothee/woothee": "<1.2,>=2",
-        "mimmi20/wurfl": "<1.6.4,>=2",
         "zsxsoft/php-useragent": "<1.2,>=2"
     },
 
@@ -63,20 +63,37 @@
     },
 
     "require-dev": {
-        "phpunit/phpunit": "^5.6.8",
-        "friendsofphp/php-cs-fixer": "^3.0",
-        "browscap/browscap-php": "^5.0",
+        "browscap/browscap-php": "^7.0",
         "donatj/phpuseragentparser": "^1.5.0",
-        "endorphin-studio/browser-detector": "^3.0",
-        "handsetdetection/php-apikit": "^4.1.10",
+        "endorphin-studio/browser-detector": "^6.0",
         "jenssegers/agent": "^2.6",
-        "mobiledetect/mobiledetectlib": "^2.7.5",
+        "laravel/pint": "^1.14",
         "matomo/device-detector": "^5.0",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^11.0",
+        "rector/rector": "^2.0",
         "sinergi/browser-detector": "^6.0",
         "ua-parser/uap-php": "^3.9",
         "whichbrowser/parser": "^2.0.10",
-        "woothee/woothee": "^1.2",
-        "mimmi20/wurfl": "^1.7.1.1",
-        "zsxsoft/php-useragent": ">=1.2,<1.4"
+        "woothee/woothee": "^1.10"
+    },
+
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    },
+
+    "scripts": {
+        "do" : "vendor/bin/rector && vendor/bin/pint && vendor/bin/phpstan analyse",
+        "format": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse",
+        "lint": "vendor/bin/pint --test",
+        "rector": "vendor/bin/rector",
+        "rector-dry": "vendor/bin/rector --dry-run"
     }
 }

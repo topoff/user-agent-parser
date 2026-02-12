@@ -1,11 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider;
 
 use UserAgentParser\Provider\SinergiBrowserDetector;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -14,113 +13,104 @@ use UserAgentParser\Provider\SinergiBrowserDetector;
 class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements RequiredProviderTestInterface
 {
     /**
-     *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getBrowserParser()
+    private function getBrowserParser(): \PHPUnit\Framework\MockObject\MockObject
     {
-        $parser = self::createMock('Sinergi\BrowserDetector\Browser');
-
-        return $parser;
+        return self::createMock(\Sinergi\BrowserDetector\Browser::class);
     }
 
     /**
-     *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getOsParser()
+    private function getOsParser(): \PHPUnit\Framework\MockObject\MockObject
     {
-        $parser = self::createMock('Sinergi\BrowserDetector\Os');
-
-        return $parser;
+        return self::createMock(\Sinergi\BrowserDetector\Os::class);
     }
 
     /**
-     *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getDeviceParser()
+    private function getDeviceParser(): \PHPUnit\Framework\MockObject\MockObject
     {
-        $parser = self::createMock('Sinergi\BrowserDetector\Device');
-
-        return $parser;
+        return self::createMock(\Sinergi\BrowserDetector\Device::class);
     }
 
-    public function testGetName()
+    public function test_get_name(): void
     {
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $this->assertEquals('SinergiBrowserDetector', $provider->getName());
     }
 
-    public function testGetHomepage()
+    public function test_get_homepage(): void
     {
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $this->assertEquals('https://github.com/sinergi/php-browser-detector', $provider->getHomepage());
     }
 
-    public function testGetPackageName()
+    public function test_get_package_name(): void
     {
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $this->assertEquals('sinergi/browser-detector', $provider->getPackageName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
-        $this->assertInternalType('string', $provider->getVersion());
+        $this->assertIsString($provider->getVersion());
     }
 
-    public function testUpdateDate()
+    public function test_update_date(): void
     {
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $this->assertInstanceOf('DateTime', $provider->getUpdateDate());
     }
 
-    public function testDetectionCapabilities()
+    public function test_detection_capabilities(): void
     {
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $this->assertEquals([
 
             'browser' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'renderingEngine' => [
-                'name'    => false,
+                'name' => false,
                 'version' => false,
             ],
 
             'operatingSystem' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'device' => [
-                'model'    => true,
-                'brand'    => false,
-                'type'     => false,
+                'model' => true,
+                'brand' => false,
+                'type' => false,
                 'isMobile' => true,
-                'isTouch'  => false,
+                'isTouch' => false,
             ],
 
             'bot' => [
                 'isBot' => true,
-                'name'  => false,
-                'type'  => false,
+                'name' => false,
+                'type' => false,
             ],
         ], $provider->getDetectionCapabilities());
     }
 
-    public function testIsRealResult()
+    public function test_is_real_result(): void
     {
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         /*
          * general
@@ -137,43 +127,38 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
         $this->assertIsRealResult($provider, true, 'something Windows Phone', 'device', 'model');
     }
 
-    public function testProvider()
+    public function test_provider(): void
     {
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
-        $this->assertInstanceOf('Sinergi\BrowserDetector\Browser', $provider->getBrowserParser(''));
-        $this->assertInstanceOf('Sinergi\BrowserDetector\Os', $provider->getOperatingSystemParser(''));
-        $this->assertInstanceOf('Sinergi\BrowserDetector\Device', $provider->getDeviceParser(''));
+        $this->assertInstanceOf(\Sinergi\BrowserDetector\Browser::class, $provider->getBrowserParser(''));
+        $this->assertInstanceOf(\Sinergi\BrowserDetector\Os::class, $provider->getOperatingSystemParser(''));
+        $this->assertInstanceOf(\Sinergi\BrowserDetector\Device::class, $provider->getDeviceParser(''));
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundException()
+    public function test_parse_no_result_found_exception(): void
     {
-        $provider = new SinergiBrowserDetector();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $provider = new SinergiBrowserDetector;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('browserParser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('browserParser');
         $property->setValue($provider, $this->getBrowserParser());
 
         $property = $reflection->getProperty('osParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getOsParser());
 
         $property = $reflection->getProperty('deviceParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getDeviceParser());
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundExceptionDefaultValue()
+    public function test_parse_no_result_found_exception_default_value(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $browserParser = $this->getBrowserParser();
         $browserParser->expects($this->any())
             ->method('isRobot')
@@ -182,29 +167,25 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
             ->method('getName')
             ->will($this->returnValue('unknown'));
 
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('browserParser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('browserParser');
         $property->setValue($provider, $browserParser);
 
         $property = $reflection->getProperty('osParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getOsParser());
 
         $property = $reflection->getProperty('deviceParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getDeviceParser());
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundExceptionDefaultValue2()
+    public function test_parse_no_result_found_exception_default_value2(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $browserParser = $this->getBrowserParser();
         $browserParser->expects($this->any())
             ->method('isRobot')
@@ -214,78 +195,69 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
             ->method('getName')
             ->will($this->returnValue('Windows Phone'));
 
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('browserParser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('browserParser');
         $property->setValue($provider, $browserParser);
 
         $property = $reflection->getProperty('osParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getOsParser());
 
         $property = $reflection->getProperty('deviceParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $deviceParser);
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * Provider name and version in result?
      */
-    public function testProviderNameAndVersionIsInResult()
+    public function test_provider_name_and_version_is_in_result(): void
     {
         $browserParser = $this->getBrowserParser();
         $browserParser->expects($this->any())
             ->method('isRobot')
             ->will($this->returnValue(true));
 
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('browserParser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('browserParser');
         $property->setValue($provider, $browserParser);
 
         $property = $reflection->getProperty('osParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getOsParser());
 
         $property = $reflection->getProperty('deviceParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getDeviceParser());
 
         $result = $provider->parse('A real user agent...');
 
         $this->assertEquals('SinergiBrowserDetector', $result->getProviderName());
-        $this->assertRegExp('/\d{1,}\.\d{1,}/', $result->getProviderVersion());
+        $this->assertMatchesRegularExpression('/\d{1,}\.\d{1,}/', $result->getProviderVersion());
     }
 
     /**
      * Bot
      */
-    public function testParseBot()
+    public function test_parse_bot(): void
     {
         $browserParser = $this->getBrowserParser();
         $browserParser->expects($this->any())
             ->method('isRobot')
             ->will($this->returnValue(true));
 
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('browserParser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('browserParser');
         $property->setValue($provider, $browserParser);
 
         $property = $reflection->getProperty('osParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getOsParser());
 
         $property = $reflection->getProperty('deviceParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getDeviceParser());
 
         $result = $provider->parse('A real user agent...');
@@ -293,8 +265,8 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ];
 
@@ -304,7 +276,7 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
     /**
      * Browser only
      */
-    public function testParseBrowser()
+    public function test_parse_browser(): void
     {
         $browserParser = $this->getBrowserParser();
         $browserParser->expects($this->any())
@@ -317,26 +289,23 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
             ->method('getVersion')
             ->will($this->returnValue('28.0.1468'));
 
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('browserParser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('browserParser');
         $property->setValue($provider, $browserParser);
 
         $property = $reflection->getProperty('osParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getOsParser());
 
         $property = $reflection->getProperty('deviceParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getDeviceParser());
 
         $result = $provider->parse('A real user agent...');
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Chrome',
+                'name' => 'Chrome',
                 'version' => [
                     'major' => 28,
                     'minor' => 0,
@@ -355,7 +324,7 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
     /**
      * OS only
      */
-    public function testParseOperatingSystem()
+    public function test_parse_operating_system(): void
     {
         $osParser = $this->getOsParser();
         $osParser->expects($this->any())
@@ -365,27 +334,24 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
             ->method('getVersion')
             ->will($this->returnValue('7.0.1'));
 
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $reflection = new \ReflectionClass($provider);
 
         $property = $reflection->getProperty('browserParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getBrowserParser());
 
         $property = $reflection->getProperty('osParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $osParser);
 
         $property = $reflection->getProperty('deviceParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getDeviceParser());
 
         $result = $provider->parse('A real user agent...');
 
         $expectedResult = [
             'operatingSystem' => [
-                'name'    => 'Windows',
+                'name' => 'Windows',
                 'version' => [
                     'major' => 7,
                     'minor' => 0,
@@ -404,7 +370,7 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
     /**
      * Device only
      */
-    public function testParseDevice()
+    public function test_parse_device(): void
     {
         $osParser = $this->getOsParser();
         $osParser->expects($this->any())
@@ -418,20 +384,17 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
             ->method('getName')
             ->will($this->returnValue('iPad'));
 
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $reflection = new \ReflectionClass($provider);
 
         $property = $reflection->getProperty('browserParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getBrowserParser());
 
         $property = $reflection->getProperty('osParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $osParser);
 
         $property = $reflection->getProperty('deviceParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $deviceParser);
 
         $result = $provider->parse('A real user agent...');
@@ -440,10 +403,10 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
             'device' => [
                 'model' => 'iPad',
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => true,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 
@@ -453,7 +416,7 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
     /**
      * Device - name default
      */
-    public function testParseDeviceDefaultValue()
+    public function test_parse_device_default_value(): void
     {
         $browserParser = $this->getBrowserParser();
         $browserParser->expects($this->any())
@@ -468,27 +431,24 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
             ->method('getName')
             ->will($this->returnValue('Windows Phone'));
 
-        $provider = new SinergiBrowserDetector();
+        $provider = new SinergiBrowserDetector;
 
         $reflection = new \ReflectionClass($provider);
 
         $property = $reflection->getProperty('browserParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $browserParser);
 
         $property = $reflection->getProperty('osParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $this->getOsParser());
 
         $property = $reflection->getProperty('deviceParser');
-        $property->setAccessible(true);
         $property->setValue($provider, $deviceParser);
 
         $result = $provider->parse('A real user agent...');
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Chrome',
+                'name' => 'Chrome',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -503,10 +463,10 @@ class SinergiBrowserDetectorTest extends AbstractProviderTestCase implements Req
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 

@@ -1,11 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Integration\Provider;
 
 use UserAgentParser\Provider\BrowscapFull;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -13,10 +12,10 @@ use UserAgentParser\Provider\BrowscapFull;
  */
 class BrowscapFullTest extends AbstractBrowscapTestCase
 {
-    public function testMethodParse()
+    public function test_method_parse(): void
     {
         $provider = new BrowscapFull($this->getParserWithWarmCache('full'));
-        $parser   = $provider->getParser();
+        $parser = $provider->getParser();
 
         /*
          * test method exists
@@ -26,15 +25,15 @@ class BrowscapFullTest extends AbstractBrowscapTestCase
         /*
          * test paramters
          */
-        $method     = $class->getMethod('getBrowser');
+        $method = $class->getMethod('getBrowser');
         $parameters = $method->getParameters();
         $this->assertEquals(1, count($parameters));
     }
 
-    public function testMethodsResult()
+    public function test_methods_result(): void
     {
         $provider = new BrowscapFull($this->getParserWithWarmCache('full'));
-        $parser   = $provider->getParser();
+        $parser = $provider->getParser();
 
         /* @var $result \stdClass */
         $result = $parser->getBrowser('A real user agent...');
@@ -60,24 +59,23 @@ class BrowscapFullTest extends AbstractBrowscapTestCase
         $this->assertObjectHasAttribute('device_pointing_method', $result);
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFoundWithWarmCache()
+    public function test_no_result_found_with_warm_cache(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $provider = new BrowscapFull($this->getParserWithWarmCache('full'));
 
-        $result = $provider->parse('...');
+        $provider->parse('...');
     }
 
-    public function testRealResultBot()
+    public function test_real_result_bot(): void
     {
         $provider = new BrowscapFull($this->getParserWithWarmCache('full'));
 
         $result = $provider->parse('Mozilla/2.0 (compatible; Ask Jeeves)');
         $this->assertEquals([
             'browser' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -89,7 +87,7 @@ class BrowscapFullTest extends AbstractBrowscapTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -101,7 +99,7 @@ class BrowscapFullTest extends AbstractBrowscapTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -115,15 +113,15 @@ class BrowscapFullTest extends AbstractBrowscapTestCase
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => true,
-                'name'  => 'AskJeeves',
-                'type'  => 'Bot/Crawler',
+                'name' => 'AskJeeves',
+                'type' => 'Bot/Crawler',
             ],
         ], $result->toArray());
 
@@ -141,14 +139,14 @@ class BrowscapFullTest extends AbstractBrowscapTestCase
         $this->assertObjectHasAttribute('crawler', $rawResult);
     }
 
-    public function testRealResultDevice()
+    public function test_real_result_device(): void
     {
         $provider = new BrowscapFull($this->getParserWithWarmCache('full'));
 
         $result = $provider->parse('Mozilla/5.0 (SMART-TV; X11; Linux armv7l) AppleWebkit/537.42 (KHTML, like Gecko) Chromium/48.0.1349.2 Chrome/25.0.1349.2 Safari/537.42');
         $this->assertEquals([
             'browser' => [
-                'name'    => 'Chromium',
+                'name' => 'Chromium',
                 'version' => [
                     'major' => 48,
                     'minor' => null,
@@ -160,7 +158,7 @@ class BrowscapFullTest extends AbstractBrowscapTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => 'Blink',
+                'name' => 'Blink',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -172,7 +170,7 @@ class BrowscapFullTest extends AbstractBrowscapTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => 'Linux',
+                'name' => 'Linux',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -186,15 +184,15 @@ class BrowscapFullTest extends AbstractBrowscapTestCase
             'device' => [
                 'model' => 'Smart TV',
                 'brand' => 'Samsung',
-                'type'  => 'TV Device',
+                'type' => 'TV Device',
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => null,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ], $result->toArray());
 

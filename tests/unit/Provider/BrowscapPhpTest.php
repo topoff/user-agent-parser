@@ -1,11 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider;
 
 use UserAgentParser\Provider\BrowscapPhp;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -14,17 +13,16 @@ use UserAgentParser\Provider\BrowscapPhp;
 class BrowscapPhpTest extends AbstractProviderTestCase
 {
     /**
-     *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getParser(\stdClass $result = null)
+    private function getParser(?\stdClass $result = null): \PHPUnit\Framework\MockObject\MockObject
     {
-        $cache = self::createMock('BrowscapPHP\Cache\BrowscapCache');
+        $cache = self::createMock(\BrowscapPHP\Cache\BrowscapCache::class);
         $cache->expects($this->any())
             ->method('getType')
             ->will($this->returnValue(''));
 
-        $parser = self::createMock('BrowscapPHP\Browscap');
+        $parser = self::createMock(\BrowscapPHP\Browscap::class);
         $parser->expects($this->any())
             ->method('getCache')
             ->will($this->returnValue($cache));
@@ -35,46 +33,46 @@ class BrowscapPhpTest extends AbstractProviderTestCase
         return $parser;
     }
 
-    public function testGetName()
+    public function test_get_name(): void
     {
         $provider = new BrowscapPhp($this->getParser());
 
         $this->assertEquals('BrowscapPhp', $provider->getName());
     }
 
-    public function testDetectionCapabilities()
+    public function test_detection_capabilities(): void
     {
         $provider = new BrowscapPhp($this->getParser());
 
         $this->assertEquals([
 
             'browser' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'renderingEngine' => [
-                'name'    => false,
+                'name' => false,
                 'version' => false,
             ],
 
             'operatingSystem' => [
-                'name'    => true,
+                'name' => true,
                 'version' => false,
             ],
 
             'device' => [
-                'model'    => false,
-                'brand'    => false,
-                'type'     => true,
+                'model' => false,
+                'brand' => false,
+                'type' => true,
                 'isMobile' => true,
-                'isTouch'  => true,
+                'isTouch' => true,
             ],
 
             'bot' => [
                 'isBot' => true,
-                'name'  => true,
-                'type'  => false,
+                'name' => true,
+                'type' => false,
             ],
         ], $provider->getDetectionCapabilities());
     }

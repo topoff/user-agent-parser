@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider\Http;
 
 use GuzzleHttp\Client;
@@ -12,6 +13,7 @@ use UserAgentParser\Model;
  *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
+ *
  * @see https://deviceatlas.com/resources/enterprise-api-documentation
  */
 class DeviceAtlasCom extends AbstractHttpProvider
@@ -33,66 +35,62 @@ class DeviceAtlasCom extends AbstractHttpProvider
     protected $detectionCapabilities = [
 
         'browser' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'renderingEngine' => [
-            'name'    => true,
+            'name' => true,
             'version' => false,
         ],
 
         'operatingSystem' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'device' => [
-            'model'    => false,
-            'brand'    => false,
-            'type'     => true,
+            'model' => false,
+            'brand' => false,
+            'type' => true,
             'isMobile' => false,
-            'isTouch'  => false,
+            'isTouch' => false,
         ],
 
         'bot' => [
             'isBot' => false,
-            'name'  => false,
-            'type'  => false,
+            'name' => false,
+            'type' => false,
         ],
     ];
 
-    private static $uri = 'http://region0.deviceatlascloud.com/v1/detect/properties';
+    private static string $uri = 'http://region0.deviceatlascloud.com/v1/detect/properties';
 
-    private $apiKey;
-
-    public function __construct(Client $client, $apiKey)
+    public function __construct(Client $client, private $apiKey)
     {
         parent::__construct($client);
-
-        $this->apiKey = $apiKey;
     }
 
-    protected function getResult($userAgent, array $headers)
+    protected function getResult(?string $userAgent, array $headers)
     {
         /*
          * an empty UserAgent makes no sense
          */
         if ($userAgent == '') {
-            throw new Exception\NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new Exception\NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
-        $parameters = '?licencekey=' . rawurlencode($this->apiKey);
-        $parameters .= '&useragent=' . rawurlencode($userAgent);
+        $parameters = '?licencekey='.rawurlencode((string) $this->apiKey);
+        $parameters .= '&useragent='.rawurlencode($userAgent);
 
-        $uri = self::$uri . $parameters;
+        $uri = self::$uri.$parameters;
 
         // key to lower
         $headers = array_change_key_case($headers);
 
         $newHeaders = [];
         foreach ($headers as $key => $value) {
-            $newHeaders['X-DA-' . $key] = $value;
+            $newHeaders['X-DA-'.$key] = $value;
         }
 
         $newHeaders['User-Agent'] = 'ThaDafinser/UserAgentParser:v1.4';
@@ -106,7 +104,7 @@ class DeviceAtlasCom extends AbstractHttpProvider
             $prevEx = $ex->getPrevious();
 
             if ($prevEx->hasResponse() === true && $prevEx->getResponse()->getStatusCode() === 403) {
-                throw new Exception\InvalidCredentialsException('Your API key "' . $this->apiKey . '" is not valid for ' . $this->getName(), null, $ex);
+                throw new Exception\InvalidCredentialsException('Your API key "'.$this->apiKey.'" is not valid for '.$this->getName(), null, $ex);
             }
 
             throw $ex;
@@ -117,31 +115,26 @@ class DeviceAtlasCom extends AbstractHttpProvider
          */
         $contentType = $response->getHeader('Content-Type');
         if (! isset($contentType[0]) || $contentType[0] != 'application/json; charset=UTF-8') {
-            throw new Exception\RequestException('Could not get valid "application/json" response from "' . $request->getUri() . '". Response is "' . $response->getBody()->getContents() . '"');
+            throw new Exception\RequestException('Could not get valid "application/json" response from "'.$request->getUri().'". Response is "'.$response->getBody()->getContents().'"');
         }
 
         $content = json_decode($response->getBody()->getContents());
 
         if (! $content instanceof stdClass || ! isset($content->properties)) {
-            throw new Exception\RequestException('Could not get valid response from "' . $request->getUri() . '". Response is "' . $response->getBody()->getContents() . '"');
+            throw new Exception\RequestException('Could not get valid response from "'.$request->getUri().'". Response is "'.$response->getBody()->getContents().'"');
         }
 
         /*
          * No result found?
          */
         if (! $content->properties instanceof stdClass || count((array) $content->properties) === 0) {
-            throw new Exception\NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new Exception\NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         return $content->properties;
     }
 
-    /**
-     *
-     * @param Model\Browser $browser
-     * @param stdClass      $resultRaw
-     */
-    private function hydrateBrowser(Model\Browser $browser, stdClass $resultRaw)
+    private function hydrateBrowser(Model\Browser $browser, stdClass $resultRaw): void
     {
         if (isset($resultRaw->browserName)) {
             $browser->setName($this->getRealResult($resultRaw->browserName, 'browser', 'name'));
@@ -152,24 +145,14 @@ class DeviceAtlasCom extends AbstractHttpProvider
         }
     }
 
-    /**
-     *
-     * @param Model\RenderingEngine $engine
-     * @param stdClass              $resultRaw
-     */
-    private function hydrateRenderingEngine(Model\RenderingEngine $engine, stdClass $resultRaw)
+    private function hydrateRenderingEngine(Model\RenderingEngine $engine, stdClass $resultRaw): void
     {
         if (isset($resultRaw->browserRenderingEngine)) {
             $engine->setName($this->getRealResult($resultRaw->browserRenderingEngine));
         }
     }
 
-    /**
-     *
-     * @param Model\OperatingSystem $os
-     * @param stdClass              $resultRaw
-     */
-    private function hydrateOperatingSystem(Model\OperatingSystem $os, stdClass $resultRaw)
+    private function hydrateOperatingSystem(Model\OperatingSystem $os, stdClass $resultRaw): void
     {
         if (isset($resultRaw->osName)) {
             $os->setName($this->getRealResult($resultRaw->osName));
@@ -181,18 +164,16 @@ class DeviceAtlasCom extends AbstractHttpProvider
     }
 
     /**
-     *
-     * @param Model\UserAgent $device
-     * @param stdClass        $resultRaw
+     * @param  Model\UserAgent  $device
      */
-    private function hydrateDevice(Model\Device $device, stdClass $resultRaw)
+    private function hydrateDevice(Model\Device $device, stdClass $resultRaw): void
     {
         if (isset($resultRaw->primaryHardwareType)) {
             $device->setType($this->getRealResult($resultRaw->primaryHardwareType));
         }
     }
 
-    public function parse($userAgent, array $headers = [])
+    public function parse($userAgent, array $headers = []): \UserAgentParser\Model\UserAgent
     {
         $resultRaw = $this->getResult($userAgent, $headers);
 

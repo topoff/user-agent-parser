@@ -1,11 +1,11 @@
 <?php
+
 namespace UserAgentParserTest\Integration\Provider;
 
 use HandsetDetection as Parser;
 use UserAgentParser\Provider\HandsetDetection;
 
 /**
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -17,10 +17,10 @@ class HandsetDetectionTest extends AbstractProviderTestCase
     {
         $config = [
             'username' => 'something',
-            'secret'   => 'something',
+            'secret' => 'something',
 
             'use_local' => true,
-            'filesdir'  => 'tests/resources/handset-detection',
+            'filesdir' => 'tests/resources/handset-detection',
 
             'log_unknown' => false,
 
@@ -29,22 +29,19 @@ class HandsetDetectionTest extends AbstractProviderTestCase
             ],
         ];
 
-        $parser = new Parser\HD4($config);
-
-        return $parser;
+        return new Parser\HD4($config);
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\InvalidArgumentException
-     */
-    public function testNoResourcesAvailable()
+    public function test_no_resources_available(): void
     {
+        $this->expectException(\UserAgentParser\Exception\InvalidArgumentException::class);
+
         $config = [
             'username' => 'something',
-            'secret'   => 'something',
+            'secret' => 'something',
 
             'use_local' => true,
-            'filesdir'  => 'tests',
+            'filesdir' => 'tests',
 
             'log_unknown' => false,
 
@@ -57,27 +54,26 @@ class HandsetDetectionTest extends AbstractProviderTestCase
 
         $provider = new HandsetDetection($parser);
 
-        $result = $provider->parse('Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36');
+        $provider->parse('Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFound()
+    public function test_no_result_found(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $provider = new HandsetDetection($this->getParser());
 
-        $result = $provider->parse('...');
+        $provider->parse('...');
     }
 
-    public function testRealResult()
+    public function test_real_result(): void
     {
         $provider = new HandsetDetection($this->getParser());
 
         $result = $provider->parse('Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3');
         $this->assertEquals([
             'browser' => [
-                'name'    => 'Mobile Safari',
+                'name' => 'Mobile Safari',
                 'version' => [
                     'major' => 5,
                     'minor' => 1,
@@ -89,7 +85,7 @@ class HandsetDetectionTest extends AbstractProviderTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -101,7 +97,7 @@ class HandsetDetectionTest extends AbstractProviderTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => 'iOS',
+                'name' => 'iOS',
                 'version' => [
                     'major' => 5,
                     'minor' => 0,
@@ -115,15 +111,15 @@ class HandsetDetectionTest extends AbstractProviderTestCase
             'device' => [
                 'model' => 'iPhone',
                 'brand' => 'Apple',
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => null,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ], $result->toArray());
 
@@ -132,7 +128,7 @@ class HandsetDetectionTest extends AbstractProviderTestCase
          */
         $rawResult = $result->getProviderResultRaw();
 
-        $this->assertInternalType('array', $rawResult);
+        $this->assertIsArray($rawResult);
         $this->assertCount(48, $rawResult);
 
         $this->assertArrayHasKey('general_vendor', $rawResult);

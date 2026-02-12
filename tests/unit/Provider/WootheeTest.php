@@ -1,11 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider;
 
 use UserAgentParser\Provider\Woothee;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -14,12 +13,11 @@ use UserAgentParser\Provider\Woothee;
 class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTestInterface
 {
     /**
-     *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getParser(array $returnValue = [])
+    private function getParser(array $returnValue = []): \PHPUnit\Framework\MockObject\MockObject
     {
-        $parser = self::createMock('Woothee\Classifier');
+        $parser = self::createMock(\Woothee\Classifier::class);
         $parser->expects($this->any())
             ->method('parse')
             ->will($this->returnValue($returnValue));
@@ -27,81 +25,81 @@ class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTe
         return $parser;
     }
 
-    public function testGetName()
+    public function test_get_name(): void
     {
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $this->assertEquals('Woothee', $provider->getName());
     }
 
-    public function testGetHomepage()
+    public function test_get_homepage(): void
     {
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $this->assertEquals('https://github.com/woothee/woothee-php', $provider->getHomepage());
     }
 
-    public function testGetPackageName()
+    public function test_get_package_name(): void
     {
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $this->assertEquals('woothee/woothee', $provider->getPackageName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
-        $provider = new Woothee();
+        $provider = new Woothee;
 
-        $this->assertInternalType('string', $provider->getVersion());
+        $this->assertIsString($provider->getVersion());
     }
 
-    public function testUpdateDate()
+    public function test_update_date(): void
     {
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $this->assertInstanceOf('DateTime', $provider->getUpdateDate());
     }
 
-    public function testDetectionCapabilities()
+    public function test_detection_capabilities(): void
     {
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $this->assertEquals([
 
             'browser' => [
-                'name'    => true,
+                'name' => true,
                 'version' => true,
             ],
 
             'renderingEngine' => [
-                'name'    => false,
+                'name' => false,
                 'version' => false,
             ],
 
             'operatingSystem' => [
-                'name'    => false,
+                'name' => false,
                 'version' => false,
             ],
 
             'device' => [
-                'model'    => false,
-                'brand'    => false,
-                'type'     => true,
+                'model' => false,
+                'brand' => false,
+                'type' => true,
                 'isMobile' => false,
-                'isTouch'  => false,
+                'isTouch' => false,
             ],
 
             'bot' => [
                 'isBot' => true,
-                'name'  => true,
-                'type'  => false,
+                'name' => true,
+                'type' => false,
             ],
         ], $provider->getDetectionCapabilities());
     }
 
-    public function testIsRealResult()
+    public function test_is_real_result(): void
     {
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         /*
          * general
@@ -125,106 +123,98 @@ class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTe
         $this->assertIsRealResult($provider, true, 'something misc crawler', 'bot', 'name');
     }
 
-    public function testParser()
+    public function test_parser(): void
     {
-        $provider = new Woothee();
+        $provider = new Woothee;
 
-        $this->assertInstanceOf('Woothee\Classifier', $provider->getParser());
+        $this->assertInstanceOf(\Woothee\Classifier::class, $provider->getParser());
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundException()
+    public function test_parse_no_result_found_exception(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $parser = $this->getParser();
 
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('parser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('parser');
         $property->setValue($provider, $parser);
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundExceptionDefaultBrowserName()
+    public function test_parse_no_result_found_exception_default_browser_name(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $parser = $this->getParser([
             'name' => 'UNKNOWN',
         ]);
 
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('parser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('parser');
         $property->setValue($provider, $parser);
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testParseNoResultFoundExceptionDefaultDeviceType()
+    public function test_parse_no_result_found_exception_default_device_type(): void
     {
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
         $parser = $this->getParser([
             'category' => 'misc',
         ]);
 
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('parser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('parser');
         $property->setValue($provider, $parser);
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * Provider name and version in result?
      */
-    public function testProviderNameAndVersionIsInResult()
+    public function test_provider_name_and_version_is_in_result(): void
     {
         $parser = $this->getParser([
             'category' => \Woothee\DataSet::DATASET_CATEGORY_CRAWLER,
-            'name'     => 'Googlebot',
+            'name' => 'Googlebot',
         ]);
 
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('parser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('parser');
         $property->setValue($provider, $parser);
 
         $result = $provider->parse('A real user agent...');
 
         $this->assertEquals('Woothee', $result->getProviderName());
-        $this->assertRegExp('/\d{1,}\.\d{1,}/', $result->getProviderVersion());
+        $this->assertMatchesRegularExpression('/\d{1,}\.\d{1,}/', $result->getProviderVersion());
     }
 
     /**
      * Bot
      */
-    public function testParseBot()
+    public function test_parse_bot(): void
     {
         $parser = $this->getParser([
             'category' => \Woothee\DataSet::DATASET_CATEGORY_CRAWLER,
-            'name'     => 'Googlebot',
+            'name' => 'Googlebot',
         ]);
 
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('parser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('parser');
         $property->setValue($provider, $parser);
 
         $result = $provider->parse('A real user agent...');
@@ -232,8 +222,8 @@ class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTe
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Googlebot',
-                'type'  => null,
+                'name' => 'Googlebot',
+                'type' => null,
             ],
         ];
 
@@ -243,18 +233,17 @@ class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTe
     /**
      * Bot
      */
-    public function testParseBotDefaultValue()
+    public function test_parse_bot_default_value(): void
     {
         $parser = $this->getParser([
             'category' => \Woothee\DataSet::DATASET_CATEGORY_CRAWLER,
-            'name'     => 'misc crawler',
+            'name' => 'misc crawler',
         ]);
 
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('parser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('parser');
         $property->setValue($provider, $parser);
 
         $result = $provider->parse('A real user agent...');
@@ -262,8 +251,8 @@ class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTe
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ];
 
@@ -273,25 +262,24 @@ class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTe
     /**
      * Browser only
      */
-    public function testParseBrowser()
+    public function test_parse_browser(): void
     {
         $parser = $this->getParser([
-            'name'    => 'Firefox',
+            'name' => 'Firefox',
             'version' => '3.0.1',
         ]);
 
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('parser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('parser');
         $property->setValue($provider, $parser);
 
         $result = $provider->parse('A real user agent...');
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Firefox',
+                'name' => 'Firefox',
                 'version' => [
                     'major' => 3,
                     'minor' => 0,
@@ -310,17 +298,16 @@ class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTe
     /**
      * Device only
      */
-    public function testParseDevice()
+    public function test_parse_device(): void
     {
         $parser = $this->getParser([
             'category' => \Woothee\DataSet::DATASET_CATEGORY_SMARTPHONE,
         ]);
 
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('parser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('parser');
         $property->setValue($provider, $parser);
 
         $result = $provider->parse('A real user agent...');
@@ -329,10 +316,10 @@ class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTe
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => 'smartphone',
+                'type' => 'smartphone',
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 
@@ -342,25 +329,24 @@ class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTe
     /**
      * Device only
      */
-    public function testParseDeviceMobilephone()
+    public function test_parse_device_mobilephone(): void
     {
         $parser = $this->getParser([
             'category' => \Woothee\DataSet::DATASET_CATEGORY_MOBILEPHONE,
-            'name'     => \Woothee\DataSet::VALUE_UNKNOWN,
+            'name' => \Woothee\DataSet::VALUE_UNKNOWN,
         ]);
 
-        $provider = new Woothee();
+        $provider = new Woothee;
 
         $reflection = new \ReflectionClass($provider);
-        $property   = $reflection->getProperty('parser');
-        $property->setAccessible(true);
+        $property = $reflection->getProperty('parser');
         $property->setValue($provider, $parser);
 
         $result = $provider->parse('A real user agent...');
 
         $expectedResult = [
             'browser' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -375,10 +361,10 @@ class WootheeTest extends AbstractProviderTestCase implements RequiredProviderTe
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => 'mobilephone',
+                'type' => 'mobilephone',
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 

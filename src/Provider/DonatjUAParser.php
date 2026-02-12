@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider;
 
 use UserAgentParser\Exception\NoResultFoundException;
@@ -10,6 +11,7 @@ use UserAgentParser\Model;
  *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
+ *
  * @see https://github.com/donatj/PhpUserAgent
  */
 class DonatjUAParser extends AbstractProvider
@@ -38,39 +40,38 @@ class DonatjUAParser extends AbstractProvider
     protected $detectionCapabilities = [
 
         'browser' => [
-            'name'    => true,
+            'name' => true,
             'version' => true,
         ],
 
         'renderingEngine' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'operatingSystem' => [
-            'name'    => false,
+            'name' => false,
             'version' => false,
         ],
 
         'device' => [
-            'model'    => false,
-            'brand'    => false,
-            'type'     => false,
+            'model' => false,
+            'brand' => false,
+            'type' => false,
             'isMobile' => false,
-            'isTouch'  => false,
+            'isTouch' => false,
         ],
 
         'bot' => [
             'isBot' => false,
-            'name'  => false,
-            'type'  => false,
+            'name' => false,
+            'type' => false,
         ],
     ];
 
-    private $functionName = '\parse_user_agent';
+    private string $functionName = '\parse_user_agent';
 
     /**
-     *
      * @throws PackageNotLoadedException
      */
     public function __construct()
@@ -79,39 +80,27 @@ class DonatjUAParser extends AbstractProvider
     }
 
     /**
-     *
-     * @param array $resultRaw
-     *
      * @return bool
      */
     private function hasResult(array $resultRaw)
     {
-        if ($this->isRealResult($resultRaw['browser'])) {
-            return true;
-        }
-
-        return false;
+        return $this->isRealResult($resultRaw['browser']);
     }
 
-    /**
-     *
-     * @param Model\Browser $browser
-     * @param array         $resultRaw
-     */
-    private function hydrateBrowser(Model\Browser $browser, array $resultRaw)
+    private function hydrateBrowser(Model\Browser $browser, array $resultRaw): void
     {
         $browser->setName($this->getRealResult($resultRaw['browser']));
         $browser->getVersion()->setComplete($this->getRealResult($resultRaw['version']));
     }
 
-    public function parse($userAgent, array $headers = [])
+    public function parse($userAgent, array $headers = []): \UserAgentParser\Model\UserAgent
     {
         $functionName = $this->functionName;
 
         $resultRaw = $functionName($userAgent);
 
         if ($this->hasResult($resultRaw) !== true) {
-            throw new NoResultFoundException('No result found for user agent: ' . $userAgent);
+            throw new NoResultFoundException('No result found for user agent: '.$userAgent);
         }
 
         /*

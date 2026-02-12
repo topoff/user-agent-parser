@@ -1,22 +1,21 @@
 <?php
+
 namespace UserAgentParserTest;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use UserAgentParser\Model\Device;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
  * @covers UserAgentParser\Model\Device
  */
-class DeviceTest extends PHPUnit_Framework_TestCase
+class DeviceTest extends TestCase
 {
-    public function testModel()
+    public function test_model(): void
     {
-        $device = new Device();
+        $device = new Device;
 
         $this->assertNull($device->getModel());
 
@@ -25,9 +24,9 @@ class DeviceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($name, $device->getModel());
     }
 
-    public function testBrand()
+    public function test_brand(): void
     {
-        $device = new Device();
+        $device = new Device;
 
         $this->assertNull($device->getBrand());
 
@@ -36,9 +35,9 @@ class DeviceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($name, $device->getBrand());
     }
 
-    public function testType()
+    public function test_type(): void
     {
-        $device = new Device();
+        $device = new Device;
 
         $this->assertNull($device->getType());
 
@@ -47,9 +46,9 @@ class DeviceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($name, $device->getType());
     }
 
-    public function testIsMobile()
+    public function test_is_mobile(): void
     {
-        $device = new Device();
+        $device = new Device;
 
         $this->assertNull($device->getIsMobile());
 
@@ -57,9 +56,9 @@ class DeviceTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($device->getIsMobile());
     }
 
-    public function testIsTouch()
+    public function test_is_touch(): void
     {
-        $device = new Device();
+        $device = new Device;
 
         $this->assertNull($device->getIsTouch());
 
@@ -67,16 +66,16 @@ class DeviceTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($device->getIsTouch());
     }
 
-    public function testToArray()
+    public function test_to_array(): void
     {
-        $device = new Device();
+        $device = new Device;
 
         $this->assertEquals([
-            'model'    => null,
-            'brand'    => null,
-            'type'     => null,
+            'model' => null,
+            'brand' => null,
+            'type' => null,
             'isMobile' => null,
-            'isTouch'  => null,
+            'isTouch' => null,
         ], $device->toArray());
 
         $device->setModel('iPad');
@@ -86,11 +85,11 @@ class DeviceTest extends PHPUnit_Framework_TestCase
         $device->setIsTouch(true);
 
         $this->assertEquals([
-            'model'    => 'iPad',
-            'brand'    => 'Apple',
-            'type'     => 'tablet',
+            'model' => 'iPad',
+            'brand' => 'Apple',
+            'type' => 'tablet',
             'isMobile' => false,
-            'isTouch'  => true,
+            'isTouch' => true,
         ], $device->toArray());
     }
 }

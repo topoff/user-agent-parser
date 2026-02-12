@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider;
 
 /**
@@ -9,21 +10,21 @@ namespace UserAgentParserTest\Unit\Provider;
  */
 interface RequiredProviderTestInterface
 {
-    public function testGetName();
+    public function test_get_name();
 
-    public function testGetHomepage();
+    public function test_get_homepage();
 
-    public function testGetPackageName();
+    public function test_get_package_name();
 
-    public function testVersion();
+    public function test_version();
 
-    public function testUpdateDate();
+    public function test_update_date();
 
-    public function testDetectionCapabilities();
+    public function test_detection_capabilities();
 
-    public function testParseNoResultFoundException();
+    public function test_parse_no_result_found_exception();
 
-    public function testIsRealResult();
+    public function test_is_real_result();
 
-    public function testProviderNameAndVersionIsInResult();
+    public function test_provider_name_and_version_is_in_result();
 }

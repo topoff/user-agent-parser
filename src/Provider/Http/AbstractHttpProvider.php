@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Provider\Http;
 
 use GuzzleHttp\Client;
@@ -16,23 +17,9 @@ use UserAgentParser\Provider\AbstractProvider;
  */
 abstract class AbstractHttpProvider extends AbstractProvider
 {
-    /**
-     *
-     * @var Client
-     */
-    private $client;
+    public function __construct(private readonly Client $client) {}
 
     /**
-     *
-     * @param Client $client
-     */
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
-
-    /**
-     *
      * @return Client
      */
     public function getClient()
@@ -41,9 +28,8 @@ abstract class AbstractHttpProvider extends AbstractProvider
     }
 
     /**
-     *
-     * @param  RequestInterface           $request
      * @return Response
+     *
      * @throws Exception\RequestException
      */
     protected function getResponse(RequestInterface $request)
@@ -52,11 +38,11 @@ abstract class AbstractHttpProvider extends AbstractProvider
             /* @var $response \GuzzleHttp\Psr7\Response */
             $response = $this->getClient()->send($request);
         } catch (GuzzleHttpException $ex) {
-            throw new Exception\RequestException('Could not get valid response from "' . $request->getUri() . '"', null, $ex);
+            throw new Exception\RequestException('Could not get valid response from "'.$request->getUri().'"', null, $ex);
         }
 
         if ($response->getStatusCode() !== 200) {
-            throw new Exception\RequestException('Could not get valid response from "' . $request->getUri() . '". Status code is: "' . $response->getStatusCode() . '"');
+            throw new Exception\RequestException('Could not get valid response from "'.$request->getUri().'". Status code is: "'.$response->getStatusCode().'"');
         }
 
         return $response;

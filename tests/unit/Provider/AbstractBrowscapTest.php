@@ -1,10 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Unit\Provider;
 
 use UserAgentParser\Provider\BrowscapPhp;
 
 /**
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -13,16 +13,15 @@ use UserAgentParser\Provider\BrowscapPhp;
 class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredProviderTestInterface
 {
     /**
-     *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getParser(\stdClass $result = null, $date = null)
+    private function getParser(?\stdClass $result = null, $date = null): \PHPUnit\Framework\MockObject\MockObject
     {
         if ($date === null) {
             $date = new \DateTime('2016-03-10 18:00:00');
         }
 
-        $cache = self::createMock('BrowscapPHP\Cache\BrowscapCache');
+        $cache = self::createMock(\BrowscapPHP\Cache\BrowscapCache::class);
         $cache->expects($this->any())
             ->method('getType')
             ->will($this->returnValue(''));
@@ -33,7 +32,7 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
             ->method('getReleaseDate')
             ->will($this->returnValue($date->format('r')));
 
-        $parser = self::createMock('BrowscapPHP\Browscap');
+        $parser = self::createMock(\BrowscapPHP\Browscap::class);
         $parser->expects($this->any())
             ->method('getCache')
             ->will($this->returnValue($cache));
@@ -46,20 +45,20 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
 
     /**
      * Warm cache is missing!
-     *
-     * @expectedException \UserAgentParser\Exception\InvalidArgumentException
-     * @expectedExceptionMessage You need to warm-up the cache first to use this provider
      */
-    public function testConstructExceptionNOWarmCache()
+    public function test_construct_exception_no_warm_cache(): void
     {
-        $cache = self::createMock('BrowscapPHP\Cache\BrowscapCache');
+        $this->expectException(\UserAgentParser\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('You need to warm-up the cache first to use this provider');
 
-        $parser = self::createMock('BrowscapPHP\Browscap');
+        $cache = self::createMock(\BrowscapPHP\Cache\BrowscapCache::class);
+
+        $parser = self::createMock(\BrowscapPHP\Browscap::class);
         $parser->expects($this->any())
             ->method('getCache')
             ->will($this->returnValue($cache));
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $parser,
             'anotherExceptedType',
         ]);
@@ -67,63 +66,63 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
 
     /**
      * Different type
-     *
-     * @expectedException \UserAgentParser\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Expected the "anotherExceptedType" data file. Instead got the "" data file
      */
-    public function testConstructException()
+    public function test_construct_exception(): void
     {
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $this->expectException(\UserAgentParser\Exception\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected the "anotherExceptedType" data file. Instead got the "" data file');
+
+        $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser(),
             'anotherExceptedType',
         ]);
     }
 
-    public function testGetName()
+    public function test_get_name(): void
     {
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser(),
         ]);
 
         $this->assertNull($provider->getName());
     }
 
-    public function testGetHomepage()
+    public function test_get_homepage(): void
     {
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser(),
         ]);
 
         $this->assertEquals('https://github.com/browscap/browscap-php', $provider->getHomepage());
     }
 
-    public function testGetPackageName()
+    public function test_get_package_name(): void
     {
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser(),
         ]);
 
         $this->assertEquals('browscap/browscap-php', $provider->getPackageName());
     }
 
-    public function testVersion()
+    public function test_version(): void
     {
         $parser = $this->getParser();
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $parser,
         ]);
 
         $this->assertEquals('321', $provider->getVersion());
     }
 
-    public function testUpdateDate()
+    public function test_update_date(): void
     {
         $date = new \DateTime('2016-03-10 18:00:00');
 
         $parser = $this->getParser(null, $date);
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $parser,
         ]);
 
@@ -133,46 +132,46 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
         $this->assertEquals($date->format('Y-m-d H:i:s'), $actualDate->format('Y-m-d H:i:s'));
     }
 
-    public function testDetectionCapabilities()
+    public function test_detection_capabilities(): void
     {
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser(),
         ]);
 
         $this->assertEquals([
 
             'browser' => [
-                'name'    => false,
+                'name' => false,
                 'version' => false,
             ],
 
             'renderingEngine' => [
-                'name'    => false,
+                'name' => false,
                 'version' => false,
             ],
 
             'operatingSystem' => [
-                'name'    => false,
+                'name' => false,
                 'version' => false,
             ],
 
             'device' => [
-                'model'    => false,
-                'brand'    => false,
-                'type'     => false,
+                'model' => false,
+                'brand' => false,
+                'type' => false,
                 'isMobile' => false,
-                'isTouch'  => false,
+                'isTouch' => false,
             ],
 
             'bot' => [
                 'isBot' => false,
-                'name'  => false,
-                'type'  => false,
+                'name' => false,
+                'type' => false,
             ],
         ], $provider->getDetectionCapabilities());
     }
 
-    public function testIsRealResult()
+    public function test_is_real_result(): void
     {
         $parser = $this->getParser();
 
@@ -211,7 +210,7 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
         $this->assertIsRealResult($provider, true, 'something Generic', 'bot', 'name');
     }
 
-    public function testParser()
+    public function test_parser(): void
     {
         $parser = $this->getParser();
 
@@ -222,107 +221,107 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
 
     /**
      * Provider no result
-     *
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
      */
-    public function testParseNoResultFoundException()
+    public function test_parse_no_result_found_exception(): void
     {
-        $result = new \stdClass();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $result = new \stdClass;
+
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * Provider result empty
-     *
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
      */
-    public function testParseNoResultFoundExceptionResultEmpty()
+    public function test_parse_no_result_found_exception_result_empty(): void
     {
-        $result          = new \stdClass();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $result = new \stdClass;
         $result->browser = '';
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * Provider result unknown
-     *
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
      */
-    public function testParseNoResultFoundExceptionResultUnknown()
+    public function test_parse_no_result_found_exception_result_unknown(): void
     {
-        $result          = new \stdClass();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $result = new \stdClass;
         $result->browser = 'unknown';
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * Provider result Default Browser
-     *
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
      */
-    public function testParseNoResultFoundExceptionResultDefaultBrowser()
+    public function test_parse_no_result_found_exception_result_default_browser(): void
     {
-        $result          = new \stdClass();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
+
+        $result = new \stdClass;
         $result->browser = 'Default Browser';
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
-        $result = $provider->parse('A real user agent...');
+        $provider->parse('A real user agent...');
     }
 
     /**
      * Provider name and version in result?
      */
-    public function testProviderNameAndVersionIsInResult()
+    public function test_provider_name_and_version_is_in_result(): void
     {
-        $result               = new \stdClass();
-        $result->browser      = 'Google Bot';
+        $result = new \stdClass;
+        $result->browser = 'Google Bot';
         $result->browser_type = 'Crawler';
-        $result->crawler      = true;
+        $result->crawler = true;
 
-        $provider = $this->getMockBuilder('UserAgentParser\Provider\AbstractBrowscap')
-        ->setConstructorArgs([$this->getParser($result)])
-        ->setMethods(['getName'])
-        ->getMockForAbstractClass();
+        $provider = $this->getMockBuilder(\UserAgentParser\Provider\AbstractBrowscap::class)
+            ->setConstructorArgs([$this->getParser($result)])
+            ->onlyMethods(['getName'])
+            ->getMockForAbstractClass();
 
         $provider->expects($this->any())
-        ->method('getName')
-        ->will($this->returnValue('Browscap'));
+            ->method('getName')
+            ->will($this->returnValue('Browscap'));
 
         $result = $provider->parse('A real user agent...');
 
         $this->assertEquals('Browscap', $result->getProviderName());
-        $this->assertRegExp('/\d{1,}$/', $result->getProviderVersion());
+        $this->assertMatchesRegularExpression('/\d{1,}$/', $result->getProviderVersion());
     }
 
     /**
      * Bot - Crawler
      */
-    public function testParseBotCrawler()
+    public function test_parse_bot_crawler(): void
     {
-        $result               = new \stdClass();
-        $result->browser      = 'Google Bot';
+        $result = new \stdClass;
+        $result->browser = 'Google Bot';
         $result->browser_type = 'Crawler';
-        $result->crawler      = true;
+        $result->crawler = true;
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
@@ -331,8 +330,8 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Google Bot',
-                'type'  => 'Crawler',
+                'name' => 'Google Bot',
+                'type' => 'Crawler',
             ],
         ];
 
@@ -342,15 +341,15 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
     /**
      * Bot - Rss
      */
-    public function testParseBotRss()
+    public function test_parse_bot_rss(): void
     {
-        $result                      = new \stdClass();
-        $result->browser             = 'Hatena RSS';
-        $result->browser_type        = 'Bot/Crawler';
-        $result->crawler             = true;
+        $result = new \stdClass;
+        $result->browser = 'Hatena RSS';
+        $result->browser_type = 'Bot/Crawler';
+        $result->crawler = true;
         $result->issyndicationreader = true;
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
@@ -359,8 +358,8 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Hatena RSS',
-                'type'  => 'RSS',
+                'name' => 'Hatena RSS',
+                'type' => 'RSS',
             ],
         ];
 
@@ -370,14 +369,14 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
     /**
      * Bot - other type
      */
-    public function testParseBotOtherType()
+    public function test_parse_bot_other_type(): void
     {
-        $result               = new \stdClass();
-        $result->browser      = 'Hatena RSS';
+        $result = new \stdClass;
+        $result->browser = 'Hatena RSS';
         $result->browser_type = 'Bot/test';
-        $result->crawler      = true;
+        $result->crawler = true;
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
@@ -386,8 +385,8 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Hatena RSS',
-                'type'  => 'Bot/test',
+                'name' => 'Hatena RSS',
+                'type' => 'Bot/test',
             ],
         ];
 
@@ -397,13 +396,13 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
     /**
      * Bot - name default
      */
-    public function testParseBotNameDefault()
+    public function test_parse_bot_name_default(): void
     {
-        $result          = new \stdClass();
+        $result = new \stdClass;
         $result->browser = 'General Crawlers';
         $result->crawler = true;
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
@@ -412,8 +411,8 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
         $expectedResult = [
             'bot' => [
                 'isBot' => true,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ];
 
@@ -423,14 +422,14 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
     /**
      * Browser small
      */
-    public function testParseBrowserSmall()
+    public function test_parse_browser_small(): void
     {
-        $result          = new \stdClass();
+        $result = new \stdClass;
         $result->browser = 'Midori';
         $result->version = '0.0';
         $result->crawler = false;
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
@@ -438,7 +437,7 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Midori',
+                'name' => 'Midori',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -457,25 +456,25 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
     /**
      * Browser with all
      */
-    public function testParseAll()
+    public function test_parse_all(): void
     {
-        $result          = new \stdClass();
+        $result = new \stdClass;
         $result->browser = 'Midori';
         $result->version = '1.5.2';
 
-        $result->renderingengine_name    = 'WebKit';
+        $result->renderingengine_name = 'WebKit';
         $result->renderingengine_version = '13.0';
 
-        $result->platform         = 'iOS';
+        $result->platform = 'iOS';
         $result->platform_version = '5.0';
 
-        $result->device_name            = 'iPad';
-        $result->device_brand_name      = 'Apple';
-        $result->device_type            = 'Tablet';
-        $result->ismobiledevice         = true;
+        $result->device_name = 'iPad';
+        $result->device_brand_name = 'Apple';
+        $result->device_type = 'Tablet';
+        $result->ismobiledevice = true;
         $result->device_pointing_method = 'touchscreen';
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
@@ -483,7 +482,7 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Midori',
+                'name' => 'Midori',
                 'version' => [
                     'major' => 1,
                     'minor' => 5,
@@ -496,7 +495,7 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
             ],
 
             'renderingEngine' => [
-                'name'    => 'WebKit',
+                'name' => 'WebKit',
                 'version' => [
                     'major' => 13,
                     'minor' => 0,
@@ -509,7 +508,7 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
             ],
 
             'operatingSystem' => [
-                'name'    => 'iOS',
+                'name' => 'iOS',
                 'version' => [
                     'major' => 5,
                     'minor' => 0,
@@ -524,10 +523,10 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
             'device' => [
                 'model' => 'iPad',
                 'brand' => 'Apple',
-                'type'  => 'Tablet',
+                'type' => 'Tablet',
 
                 'isMobile' => true,
-                'isTouch'  => true,
+                'isTouch' => true,
             ],
         ];
 
@@ -537,13 +536,13 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
     /**
      * Device - model default
      */
-    public function testParseDeviceModelDefault()
+    public function test_parse_device_model_default(): void
     {
-        $result              = new \stdClass();
-        $result->browser     = 'Midori';
+        $result = new \stdClass;
+        $result->browser = 'Midori';
         $result->device_name = 'general';
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
@@ -551,7 +550,7 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Midori',
+                'name' => 'Midori',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -566,10 +565,10 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 
@@ -579,13 +578,13 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
     /**
      * Device - model default
      */
-    public function testParseDeviceModelDefault2()
+    public function test_parse_device_model_default2(): void
     {
-        $result              = new \stdClass();
-        $result->browser     = 'Midori';
+        $result = new \stdClass;
+        $result->browser = 'Midori';
         $result->device_name = 'desktop';
 
-        $provider = $this->getMockForAbstractClass('UserAgentParser\Provider\AbstractBrowscap', [
+        $provider = $this->getMockForAbstractClass(\UserAgentParser\Provider\AbstractBrowscap::class, [
             $this->getParser($result),
         ]);
 
@@ -593,7 +592,7 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
 
         $expectedResult = [
             'browser' => [
-                'name'    => 'Midori',
+                'name' => 'Midori',
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -608,10 +607,10 @@ class AbstractBrowscapTest extends AbstractProviderTestCase implements RequiredP
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
         ];
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Model;
 
 /**
@@ -14,27 +15,22 @@ class OperatingSystem
      */
     private $name;
 
-    /**
-     * @var Version
-     */
-    private $version;
+    private Version $version;
 
     public function __construct()
     {
-        $this->version = new Version();
+        $this->version = new Version;
     }
 
     /**
-     *
-     * @param string $name
+     * @param  string  $name
      */
-    public function setName($name)
+    public function setName($name): void
     {
         $this->name = $name;
     }
 
     /**
-     *
      * @return string
      */
     public function getName()
@@ -42,29 +38,20 @@ class OperatingSystem
         return $this->name;
     }
 
-    /**
-     * @param Version $version
-     */
-    public function setVersion(Version $version)
+    public function setVersion(Version $version): void
     {
         $this->version = $version;
     }
 
-    /**
-     * @return Version
-     */
-    public function getVersion()
+    public function getVersion(): Version
     {
         return $this->version;
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return [
-            'name'    => $this->getName(),
+            'name' => $this->getName(),
             'version' => $this->getVersion()->toArray(),
         ];
     }

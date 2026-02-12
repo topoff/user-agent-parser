@@ -1,4 +1,5 @@
 <?php
+
 namespace UserAgentParser\Model;
 
 /**
@@ -10,46 +11,39 @@ namespace UserAgentParser\Model;
 class Device
 {
     /**
-     *
      * @var string
      */
     private $model;
 
     /**
-     *
      * @var string
      */
     private $brand;
 
     /**
-     *
      * @var string
      */
     private $type;
 
     /**
-     *
-     * @var boolean
+     * @var bool
      */
     private $isMobile;
 
     /**
-     *
-     * @var boolean
+     * @var bool
      */
     private $isTouch;
 
     /**
-     *
-     * @param string $model
+     * @param  string  $model
      */
-    public function setModel($model)
+    public function setModel($model): void
     {
         $this->model = $model;
     }
 
     /**
-     *
      * @return string
      */
     public function getModel()
@@ -58,16 +52,14 @@ class Device
     }
 
     /**
-     *
-     * @param string $brand
+     * @param  string  $brand
      */
-    public function setBrand($brand)
+    public function setBrand($brand): void
     {
         $this->brand = $brand;
     }
 
     /**
-     *
      * @return string
      */
     public function getBrand()
@@ -76,16 +68,14 @@ class Device
     }
 
     /**
-     *
-     * @param string $type
+     * @param  string  $type
      */
-    public function setType($type)
+    public function setType($type): void
     {
         $this->type = $type;
     }
 
     /**
-     *
      * @return string
      */
     public function getType()
@@ -94,17 +84,15 @@ class Device
     }
 
     /**
-     *
-     * @param boolean $isMobile
+     * @param  bool  $isMobile
      */
-    public function setIsMobile($isMobile)
+    public function setIsMobile($isMobile): void
     {
         $this->isMobile = $isMobile;
     }
 
     /**
-     *
-     * @return boolean
+     * @return bool
      */
     public function getIsMobile()
     {
@@ -112,35 +100,29 @@ class Device
     }
 
     /**
-     *
-     * @param boolean $isTouch
+     * @param  bool  $isTouch
      */
-    public function setIsTouch($isTouch)
+    public function setIsTouch($isTouch): void
     {
         $this->isTouch = $isTouch;
     }
 
     /**
-     *
-     * @return boolean
+     * @return bool
      */
     public function getIsTouch()
     {
         return $this->isTouch;
     }
 
-    /**
-     *
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return [
-            'model'    => $this->getModel(),
-            'brand'    => $this->getBrand(),
-            'type'     => $this->getType(),
+            'model' => $this->getModel(),
+            'brand' => $this->getBrand(),
+            'type' => $this->getType(),
             'isMobile' => $this->getIsMobile(),
-            'isTouch'  => $this->getIsTouch(),
+            'isTouch' => $this->getIsTouch(),
         ];
     }
 }

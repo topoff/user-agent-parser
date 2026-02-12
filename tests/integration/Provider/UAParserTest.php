@@ -1,11 +1,10 @@
 <?php
+
 namespace UserAgentParserTest\Integration\Provider;
 
 use UserAgentParser\Provider\UAParser;
 
 /**
- *
- *
  * @author Martin Keckeis <martin.keckeis1@gmail.com>
  * @license MIT
  *
@@ -13,15 +12,15 @@ use UserAgentParser\Provider\UAParser;
  */
 class UAParserTest extends AbstractProviderTestCase
 {
-    private function getParser()
+    private function getParser(): \UAParser\Parser
     {
-        return new \UAParser\Parser(include 'tests/resources/uaparser/regexes.php');
+        return new \UAParser\Parser(include __DIR__.'/tests/resources/uaparser/regexes.php');
     }
 
-    public function testMethodParse()
+    public function test_method_parse(): void
     {
         $provider = new UAParser($this->getParser());
-        $parser   = $provider->getParser();
+        $parser = $provider->getParser();
 
         /*
          * test method exists
@@ -33,7 +32,7 @@ class UAParserTest extends AbstractProviderTestCase
         /*
          * test paramters
          */
-        $method     = $class->getMethod('parse');
+        $method = $class->getMethod('parse');
         $parameters = $method->getParameters();
 
         $this->assertEquals(2, count($parameters));
@@ -44,31 +43,31 @@ class UAParserTest extends AbstractProviderTestCase
         $this->assertTrue($optionalPara->isOptional(), '2nd parameter of parse() is not optional anymore');
     }
 
-    public function testParseResult()
+    public function test_parse_result(): void
     {
         $provider = new UAParser($this->getParser());
-        $parser   = $provider->getParser();
+        $parser = $provider->getParser();
 
         /* @var $result \UAParser\Result\Client */
         $result = $parser->parse('A real user agent...');
 
-        $this->assertInstanceOf('UAParser\Result\Client', $result);
+        $this->assertInstanceOf(\UAParser\Result\Client::class, $result);
 
         $class = new \ReflectionClass($result);
 
         $this->assertTrue($class->hasProperty('ua'), 'property ua does not exist anymore');
-        $this->assertInstanceOf('UAParser\Result\UserAgent', $result->ua);
+        $this->assertInstanceOf(\UAParser\Result\UserAgent::class, $result->ua);
 
         $this->assertTrue($class->hasProperty('os'), 'property os does not exist anymore');
-        $this->assertInstanceOf('UAParser\Result\OperatingSystem', $result->os);
+        $this->assertInstanceOf(\UAParser\Result\OperatingSystem::class, $result->os);
 
         $this->assertTrue($class->hasProperty('device'), 'property os does not exist anymore');
-        $this->assertInstanceOf('UAParser\Result\Device', $result->device);
+        $this->assertInstanceOf(\UAParser\Result\Device::class, $result->device);
     }
 
-    public function testClassBrowserResult()
+    public function test_class_browser_result(): void
     {
-        $class = new \ReflectionClass('UAParser\Result\OperatingSystem');
+        $class = new \ReflectionClass(\UAParser\Result\OperatingSystem::class);
 
         $this->assertTrue($class->hasProperty('family'), 'property family does not exist anymore');
         $this->assertTrue($class->hasProperty('major'), 'property major does not exist anymore');
@@ -76,9 +75,9 @@ class UAParserTest extends AbstractProviderTestCase
         $this->assertTrue($class->hasProperty('patch'), 'property patch does not exist anymore');
     }
 
-    public function testClassOsResult()
+    public function test_class_os_result(): void
     {
-        $class = new \ReflectionClass('UAParser\Result\UserAgent');
+        $class = new \ReflectionClass(\UAParser\Result\UserAgent::class);
 
         $this->assertTrue($class->hasProperty('family'), 'property family does not exist anymore');
         $this->assertTrue($class->hasProperty('major'), 'property major does not exist anymore');
@@ -86,33 +85,32 @@ class UAParserTest extends AbstractProviderTestCase
         $this->assertTrue($class->hasProperty('patch'), 'property patch does not exist anymore');
     }
 
-    public function testClassDeviceResult()
+    public function test_class_device_result(): void
     {
-        $class = new \ReflectionClass('UAParser\Result\Device');
+        $class = new \ReflectionClass(\UAParser\Result\Device::class);
 
         $this->assertTrue($class->hasProperty('model'), 'property family does not exist anymore');
         $this->assertTrue($class->hasProperty('brand'), 'property major does not exist anymore');
         $this->assertTrue($class->hasProperty('family'), 'property family does not exist anymore');
     }
 
-    /**
-     * @expectedException \UserAgentParser\Exception\NoResultFoundException
-     */
-    public function testNoResultFound()
+    public function test_no_result_found(): void
     {
-        $provider = new UAParser();
+        $this->expectException(\UserAgentParser\Exception\NoResultFoundException::class);
 
-        $result = $provider->parse('...');
+        $provider = new UAParser;
+
+        $provider->parse('...');
     }
 
-    public function testRealResultBot()
+    public function test_real_result_bot(): void
     {
-        $provider = new UAParser();
+        $provider = new UAParser;
 
         $result = $provider->parse('Googlebot/2.1 (+http://www.googlebot.com/bot.html)');
         $this->assertEquals([
             'browser' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -124,7 +122,7 @@ class UAParserTest extends AbstractProviderTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -136,7 +134,7 @@ class UAParserTest extends AbstractProviderTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -150,15 +148,15 @@ class UAParserTest extends AbstractProviderTestCase
             'device' => [
                 'model' => null,
                 'brand' => null,
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => true,
-                'name'  => 'Googlebot',
-                'type'  => null,
+                'name' => 'Googlebot',
+                'type' => null,
             ],
         ], $result->toArray());
 
@@ -167,45 +165,45 @@ class UAParserTest extends AbstractProviderTestCase
          */
         $rawResult = $result->getProviderResultRaw();
 
-        $this->assertInstanceOf('UAParser\Result\Client', $rawResult);
+        $this->assertInstanceOf(\UAParser\Result\Client::class, $rawResult);
         $this->assertObjectHasAttribute('ua', $rawResult);
         $this->assertObjectHasAttribute('os', $rawResult);
         $this->assertObjectHasAttribute('device', $rawResult);
         $this->assertObjectHasAttribute('originalUserAgent', $rawResult);
 
-        //ua
+        // ua
         $ua = $rawResult->ua;
-        $this->assertInstanceOf('UAParser\Result\UserAgent', $ua);
+        $this->assertInstanceOf(\UAParser\Result\UserAgent::class, $ua);
         $this->assertObjectHasAttribute('major', $ua);
         $this->assertObjectHasAttribute('minor', $ua);
         $this->assertObjectHasAttribute('patch', $ua);
         $this->assertObjectHasAttribute('family', $ua);
 
-        //os
+        // os
         $os = $rawResult->os;
-        $this->assertInstanceOf('UAParser\Result\OperatingSystem', $os);
+        $this->assertInstanceOf(\UAParser\Result\OperatingSystem::class, $os);
         $this->assertObjectHasAttribute('major', $os);
         $this->assertObjectHasAttribute('minor', $os);
         $this->assertObjectHasAttribute('patch', $os);
         $this->assertObjectHasAttribute('patchMinor', $os);
         $this->assertObjectHasAttribute('family', $os);
 
-        //os
+        // os
         $device = $rawResult->device;
-        $this->assertInstanceOf('UAParser\Result\Device', $device);
+        $this->assertInstanceOf(\UAParser\Result\Device::class, $device);
         $this->assertObjectHasAttribute('brand', $device);
         $this->assertObjectHasAttribute('model', $device);
         $this->assertObjectHasAttribute('family', $device);
     }
 
-    public function testRealResultDevice()
+    public function test_real_result_device(): void
     {
-        $provider = new UAParser();
+        $provider = new UAParser;
 
         $result = $provider->parse('Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3');
         $this->assertEquals([
             'browser' => [
-                'name'    => 'Mobile Safari',
+                'name' => 'Mobile Safari',
                 'version' => [
                     'major' => 5,
                     'minor' => 1,
@@ -217,7 +215,7 @@ class UAParserTest extends AbstractProviderTestCase
                 ],
             ],
             'renderingEngine' => [
-                'name'    => null,
+                'name' => null,
                 'version' => [
                     'major' => null,
                     'minor' => null,
@@ -229,7 +227,7 @@ class UAParserTest extends AbstractProviderTestCase
                 ],
             ],
             'operatingSystem' => [
-                'name'    => 'iOS',
+                'name' => 'iOS',
                 'version' => [
                     'major' => 5,
                     'minor' => 0,
@@ -243,15 +241,15 @@ class UAParserTest extends AbstractProviderTestCase
             'device' => [
                 'model' => 'iPhone',
                 'brand' => 'Apple',
-                'type'  => null,
+                'type' => null,
 
                 'isMobile' => null,
-                'isTouch'  => null,
+                'isTouch' => null,
             ],
             'bot' => [
                 'isBot' => null,
-                'name'  => null,
-                'type'  => null,
+                'name' => null,
+                'type' => null,
             ],
         ], $result->toArray());
     }
