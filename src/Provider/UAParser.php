@@ -182,9 +182,6 @@ class UAParser extends AbstractProvider
         $os->getVersion()->setPatch($this->getRealResult($osRaw->patch));
     }
 
-    /**
-     * @param  Model\UserAgent  $device
-     */
     private function hydrateDevice(Model\Device $device, \UAParser\Result\Device $deviceRaw): void
     {
         $device->setModel($this->getRealResult($deviceRaw->model, 'device', 'model'));

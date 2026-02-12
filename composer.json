@@ -10,7 +10,7 @@
         },
         {
             "name": "ndberg",
-            "email": "a@bergerweb.ch"
+            "email": "code@bergerweb.ch"
         }
     ],
 
@@ -30,55 +30,38 @@
     "require": {
         "php": "^8.3",
         "composer-runtime-api": "^2.0",
-        "guzzlehttp/guzzle": "^6.1||^7.0"
+        "guzzlehttp/guzzle": "^7.0"
     },
 
     "conflict": {
         "browscap/browscap-php": "<3,>=8",
         "donatj/phpuseragentparser": "<1,>=2",
-        "jenssegers/agent": "<2.6,>=3",
-        "matomo/device-detector": "<5,>=6",
-        "mobiledetect/mobiledetectlib": "<2.7.5,>=3",
-        "mimmi20/wurfl": "<1.6.4,>=2",
-        "sinergi/browser-detector": "<6,>=7",
+        "matomo/device-detector": "<6,>=7",
         "ua-parser/uap-php": "<3.4.3,>=4",
-        "whichbrowser/parser": "<2.0.10,>=3",
-        "woothee/woothee": "<1.2,>=2",
-        "zsxsoft/php-useragent": "<1.2,>=2"
+        "whichbrowser/parser": "<2.0.10,>=3"
     },
 
     "suggest": {
         "browscap/browscap-php": "Needed to use Provider\\BrowscapPhp",
         "donatj/phpuseragentparser": "Needed to use Provider\\DonatjUAParser",
-        "endorphin-studio/browser-detector": "Needed to use Provider\\Endorphin",
-        "handsetdetection/php-apikit": "Needed to use Provider\\HandsetDetection",
-        "jenssegers/agent": "Needed to use Provider\\JenssegersAgent",
         "matomo/device-detector": "Needed to use Provider\\MatomoDeviceDetector",
-        "sinergi/browser-detector": "Needed to use Provider\\SinergiBrowserDetector",
         "ua-parser/uap-php": "Needed to use Provider\\UAParser",
-        "whichbrowser/parser": "Needed to use Provider\\WhichBrowser",
-        "woothee/woothee": "Needed to use Provider\\Woothee",
-        "mimmi20/wurfl": "Needed to use Provider\\Wurfl",
-        "zsxsoft/php-useragent": "Needed to use Provider\\Zsxsoft"
+        "whichbrowser/parser": "Needed to use Provider\\WhichBrowser"
     },
 
     "require-dev": {
         "browscap/browscap-php": "^7.0",
         "donatj/phpuseragentparser": "^1.5.0",
-        "endorphin-studio/browser-detector": "^6.0",
-        "jenssegers/agent": "^2.6",
         "laravel/pint": "^1.14",
-        "matomo/device-detector": "^5.0",
+        "matomo/device-detector": "^6.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.0",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpunit/phpunit": "^11.0",
         "rector/rector": "^2.0",
-        "sinergi/browser-detector": "^6.0",
         "ua-parser/uap-php": "^3.9",
-        "whichbrowser/parser": "^2.0.10",
-        "woothee/woothee": "^1.10"
+        "whichbrowser/parser": "^2.0.10"
     },
 
     "config": {
@@ -89,7 +72,7 @@
     },
 
     "scripts": {
-        "do" : "vendor/bin/rector && vendor/bin/pint && vendor/bin/phpstan analyse",
+        "do": "vendor/bin/rector && vendor/bin/pint && vendor/bin/phpstan analyse",
         "format": "vendor/bin/pint",
         "analyse": "vendor/bin/phpstan analyse",
         "lint": "vendor/bin/pint --test",

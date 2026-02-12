@@ -116,7 +116,6 @@ class MatomoDeviceDetector extends AbstractProvider
             'operatingSystem' => $dd->getOs(),
 
             'device' => [
-                'brand' => $dd->getBrand(),
                 'brandName' => $dd->getBrandName(),
 
                 'model' => $dd->getModel(),
@@ -233,9 +232,6 @@ class MatomoDeviceDetector extends AbstractProvider
         }
     }
 
-    /**
-     * @param  Model\UserAgent  $device
-     */
     private function hydrateDevice(Model\Device $device, DeviceDetector $dd): void
     {
         $device->setModel($this->getRealResult($dd->getModel()));

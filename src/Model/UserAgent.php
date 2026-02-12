@@ -25,11 +25,6 @@ class UserAgent
      */
     private $providerResultRaw;
 
-    /**
-     * @param  string  $provider
-     * @param  string  $providerName
-     * @param  string  $providerVersion
-     */
     public function __construct(/**
      * Provider name
      */
